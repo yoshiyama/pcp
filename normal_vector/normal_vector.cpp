@@ -33,6 +33,7 @@ int main(int argc, char** argv)
 	float rd;
 	
 	rd=atof(argv[3]);
+	//instancing
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 
 
