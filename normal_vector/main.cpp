@@ -1,4 +1,13 @@
 /******************
+Software License Agreement (BSD License)
+
+Point Cloud Library (PCL) - www.pointclouds.org
+Copyright (c) 2009-2012, Willow Garage, Inc.
+Copyright (c) 2012-, Open Perception, Inc.
+Copyright (c) XXX, respective authors.
+
+All rights reserved.
+
 Normal Calc argv
 
 Input file: PCD file -> X Y Z rgb

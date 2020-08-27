@@ -1,3 +1,12 @@
+// Software License Agreement (BSD License)
+
+// Point Cloud Library (PCL) - www.pointclouds.org
+// Copyright (c) 2009-2012, Willow Garage, Inc.
+// Copyright (c) 2012-, Open Perception, Inc.
+// Copyright (c) XXX, respective authors.
+
+// All rights reserved.
+
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
