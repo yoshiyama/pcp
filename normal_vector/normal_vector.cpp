@@ -7,10 +7,19 @@ Copyright (c) 2012-, Open Perception, Inc.
 Copyright (c) XXX, respective authors.
 
 All rights reserved.
+<<<<<<< HEAD
 
 Normal Calc argv
 
 Input file: PCD file -> X Y Z rgb
+=======
+//////////////////////////////////////
+Normal Calc argv
+
+go.exe input.pcd output.pcd radius[m]
+
+Input file: PCD file -> X Y Z
+>>>>>>> 55d748024fe63e77fe1ef275868aede65146ef8d
 Output file:
 ********************/
 
@@ -30,11 +39,26 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+<<<<<<< HEAD
 	float rd;
 	
 	rd=atof(argv[3]);
 	//instancing
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+=======
+	if (argc != 4)
+    {
+        cout << "Error!\n **.exe input.pcd output.pcd radius[m]\n";
+            return 0;
+    }
+
+	float rd;
+	
+	rd=atof(argv[3]);
+
+	//smart pointer::変数の宣言，点群オブジェクトの宣言
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
+>>>>>>> 55d748024fe63e77fe1ef275868aede65146ef8d
 
 
 	if(pcl::io::loadPCDFile(argv[1], *cloud) == -1)
@@ -45,9 +69,18 @@ int main(int argc, char** argv)
 
 	
 	// Create the normal estimation class, and pass the input dataset to it
+<<<<<<< HEAD
 	pcl::NormalEstimation <pcl::PointXYZRGB, pcl::Normal> ne;
 	ne.setInputCloud (cloud);
 	
+=======
+	// This is instancing, too.
+	pcl::NormalEstimation<pcl::PointXYZRGB, pcl::Normal> ne;
+	ne.setInputCloud (cloud);
+
+	//const修飾子はすぐ右のshared_ptr<>クラスにかかることになり、shared_ptrの指す先は変更できなくなりますが内容は変更可能なままです。
+	//https://cdecrement.blog.fc2.com/blog-entry-58.html
+>>>>>>> 55d748024fe63e77fe1ef275868aede65146ef8d
 	const pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
 
 	//Create an empty kdtree representation, and pass it to the normal estimation object.
@@ -60,16 +93,27 @@ int main(int argc, char** argv)
 	ne.setRadiusSearch (rd);
 
 
+<<<<<<< HEAD
 	//ñ@ê¸ÇÃåvéZåãâ éÊìæ
 
 	
 	// Compute the features
 	ne.compute (*normals);
 
+=======
+	
+	// Compute the features
+	ne.compute (*normals);
+	//smart pointer for savingpw
+>>>>>>> 55d748024fe63e77fe1ef275868aede65146ef8d
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_cloud(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
     //u_int32_t r = 0, g = 0, b = 0;
 
     //点群の変換開始
+<<<<<<< HEAD
+=======
+	//ポインタからメンバにアクセスする
+>>>>>>> 55d748024fe63e77fe1ef275868aede65146ef8d
     out_cloud->width=cloud->width;
     out_cloud->height=cloud->height;  
     out_cloud->is_dense=cloud->is_dense;
@@ -91,7 +135,11 @@ int main(int argc, char** argv)
         // g = cloud->points[i].g;
         // b = cloud->points[i].b;
         out_cloud->points[i].rgb=cloud->points[i].rgb;
+<<<<<<< HEAD
         flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
+=======
+        // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
+>>>>>>> 55d748024fe63e77fe1ef275868aede65146ef8d
         out_cloud->points[i].normal_x=normals->points[i].normal_x;
         out_cloud->points[i].normal_y=normals->points[i].normal_y;
         out_cloud->points[i].normal_z=normals->points[i].normal_z;
