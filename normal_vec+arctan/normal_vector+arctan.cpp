@@ -8,7 +8,9 @@ Copyright (c) XXX, respective authors.
 
 All rights reserved.
 //////////////////////////////////////
-Normal Calc argv
+Normal Calc+arctan
+
+atan returns radian
 
 go.exe input.pcd output.pcd radius[m]
 
@@ -22,6 +24,8 @@ Output file:
 #include <fstream> //
 #include <iomanip>
 #include <vector>
+
+#include <cmath>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
@@ -114,8 +118,10 @@ int main(int argc, char** argv)
 
 	vector<vector<float> >v(m, vector<float>(n));
 
+    double pi = 2.0 * asin(1.0);            /* πの値 */
+    double unit_r = 180.0 / pi;                 /* ラジアン → 度 */
 	
-
+//Display normal vector but only x,y
 	for (size_t i = 0; i < out_cloud->points.size(); ++i) //gyou
 	{
 		// for (size_t j = 0; j < n; ++j) //retsu
@@ -124,7 +130,12 @@ int main(int argc, char** argv)
 			v[i][0]=(float)normals->points[i].normal_x;
 			v[i][1]=(float)normals->points[i].normal_y;
 			cout << "x[" << i << "][" << 0 << "] = " << v[i][0] << ",";
-			cout << "x[" << i << "][" << 1 << "] = " << v[i][1] << '\n';
+			cout << "x[" << i << "][" << 1 << "] = " << v[i][1] << ',';
+            double n_x=v[i][0];
+            double n_y=v[i][1];
+            double angle = n_y/n_x;
+            double az = atan(angle) * unit_r;
+            cout << "angle=" <<(int)az<<"度"<<'\n';
 		// }
 	}
 
