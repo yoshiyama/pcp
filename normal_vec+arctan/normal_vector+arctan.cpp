@@ -111,12 +111,13 @@ int main(int argc, char** argv)
 /////////////////////////////////
 	int m = out_cloud->points.size();
 	int n = 2;//x,yで二つ
-
+//This is for saving normal vectors but just only x,y
 	vector<vector<float> >v(m, vector<float>(n));
 
+//angle calculation
     double pi = 2.0 * asin(1.0);            /* πの値 */
     double unit_r = 180.0 / pi;                 /* ラジアン → 度 */
-	
+
 //Display normal vector but only x,y
 	for (size_t i = 0; i < out_cloud->points.size(); ++i) //gyou
 	{
