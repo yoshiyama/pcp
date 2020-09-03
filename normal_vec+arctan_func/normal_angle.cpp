@@ -11,7 +11,7 @@ void normal_angle(const double* nxy, int* angle, const int size)
     // int m = out_cloud->points.size();
 	// int n = 2;//x,yで二つ
     int m;
-	int n = 2;//x,yで二つ
+	// int n = 2;//x,yで二つ
 
     // vector<vector<double>> v(m, vector<double>(n));
 
