@@ -31,6 +31,8 @@ Output file:
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 
+#include "normal_angle.hpp"
+
 using namespace std;
 
 // string getFileName();
@@ -53,7 +55,6 @@ int main(int argc, char** argv)
 		PCL_ERROR("Coudn't read PCD file\n");
 		return(-1);
 	}
-
 	
 	// Create the normal estimation class, and pass the input dataset to it
 	// This is instancing, too.
@@ -88,6 +89,14 @@ int main(int argc, char** argv)
 	//ofstream ofs;
 	//ofs.open(argv[2]);
 
+	int p_size;
+	vector<double> n_v(p_size);
+	vector<int> ang(p_size);
+
+	p_size = 2 * out_cloud->points.size();
+
+	cout<<"done1\n";
+
 	for(size_t i=0; i < out_cloud->points.size() ; ++i)
 	// for(size_t i=0; i < cloud->points.size() ; ++i)
 	{
@@ -101,12 +110,15 @@ int main(int argc, char** argv)
         // b = cloud->points[i].b;
         out_cloud->points[i].rgb=cloud->points[i].rgb;
         // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
-        out_cloud->points[i].normal_x=normals->points[i].normal_x;
-        out_cloud->points[i].normal_y=normals->points[i].normal_y;
-        out_cloud->points[i].normal_z=normals->points[i].normal_z;
-        out_cloud->points[i].curvature=normals->points[i].curvature;
+        out_cloud->points[i].normal_x = normals->points[i].normal_x;
+        out_cloud->points[i].normal_y = normals->points[i].normal_y;
+		n_v[2*i] = normals->points[i].normal_x;
+		n_v[2*i+1] = normals->points[i].normal_y;
+        out_cloud->points[i].normal_z = normals->points[i].normal_z;
+        out_cloud->points[i].curvature = normals->points[i].curvature;
 	}
     pcl::io::savePCDFileASCII (argv[2], *out_cloud);
+	cout<<"done\n";
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////
 //
@@ -115,33 +127,37 @@ int main(int argc, char** argv)
 // calculate angle
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////
-	int m = out_cloud->points.size();
-	int n = 2;//x,yで二つ
-//This is for saving normal vectors but just only x,y
-	vector<vector<float> >v(m, vector<float>(n));
 
-//angle calculation
-    double pi = 2.0 * asin(1.0);            /* πの値 */
-    double unit_r = 180.0 / pi;                 /* ラジアン → 度 */
+	// void normal_angle(const double* nxy,int* angle,const int size);
+	normal_angle(&n_v[0],&ang[0],p_size);	
 
-//Display normal vector but only x,y
-	for (size_t i = 0; i < out_cloud->points.size(); ++i) //gyou
-	{
-		// for (size_t j = 0; j < n; ++j) //retsu
-		// {
-			// cout << "x[" << i << "][" << j << "] = " << x[i][j] << '\n';
-			v[i][0]=(float)normals->points[i].normal_x;
-			v[i][1]=(float)normals->points[i].normal_y;
-			cout << "x[" << i << "][" << 0 << "] = " << v[i][0] << ",";
-			cout << "x[" << i << "][" << 1 << "] = " << v[i][1] << ',';
+// 	int m = out_cloud->points.size();
+// 	int n = 2;//x,yで二つ
+// //This is for saving normal vectors but just only x,y
+// 	vector<vector<float> >v(m, vector<float>(n));
 
-            double n_x=v[i][0];//for calculating angle
-            double n_y=v[i][1];//for calculating angle
-            double angle = n_y/n_x;//radian
-            double az = atan(angle) * unit_r;//convert to degree
-            cout << "angle=" <<(int)az<<"度"<<'\n';
-		// }
-	}
+// //angle calculation
+//     double pi = 2.0 * asin(1.0);            /* πの値 */
+//     double unit_r = 180.0 / pi;                 /* ラジアン → 度 */
+
+// //Display normal vector but only x,y
+// 	for (size_t i = 0; i < out_cloud->points.size(); ++i) //gyou
+// 	{
+// 		// for (size_t j = 0; j < n; ++j) //retsu
+// 		// {
+// 			// cout << "x[" << i << "][" << j << "] = " << x[i][j] << '\n';
+// 			v[i][0]=(float)normals->points[i].normal_x;
+// 			v[i][1]=(float)normals->points[i].normal_y;
+// 			cout << "x[" << i << "][" << 0 << "] = " << v[i][0] << ",";
+// 			cout << "x[" << i << "][" << 1 << "] = " << v[i][1] << ',';
+
+//             double n_x=v[i][0];//for calculating angle
+//             double n_y=v[i][1];//for calculating angle
+//             double angle = n_y/n_x;//radian
+//             double az = atan(angle) * unit_r;//convert to degree
+//             cout << "angle=" <<(int)az<<"度"<<'\n';
+// 		// }
+// 	}
 
 	return(0);
 }

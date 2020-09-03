@@ -31,6 +31,8 @@ Output file:
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 
+// #include "normal_"
+
 using namespace std;
 
 // string getFileName();
