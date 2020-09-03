@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 	vector<double> n_v(p_size);
 	vector<int> ang(p_size);
 
-	p_size = 2 * out_cloud->points.size();
+	p_size = out_cloud->points.size();
 
 	cout<<"done1\n";
 
