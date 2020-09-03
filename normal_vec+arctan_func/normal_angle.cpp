@@ -6,7 +6,7 @@
 using namespace std;
 
 //void normal_angle(double* nx,double*ny,int size)
-void normal_angle(const double* nxy,int* angle,const int size)
+void normal_angle(const double* nxy, int* angle, const int size)
 {
     // int m = out_cloud->points.size();
 	// int n = 2;//x,yで二つ
@@ -15,7 +15,7 @@ void normal_angle(const double* nxy,int* angle,const int size)
 
     // vector<vector<double>> v(m, vector<double>(n));
 
-    vector<int> v(2*m);//for saving normal_x・y
+    // vector<int> v(2*m);//for saving normal_x・y
     vector<int> v_angle(m);//for saving angle
 
     m=size;
@@ -36,10 +36,10 @@ void normal_angle(const double* nxy,int* angle,const int size)
 			// v[i][1]=nxy[i][1];
 			// v[i][0]=nxy[2*i];
 			// v[i][1]=nxy[2*i+1];
-            cout << "normal_x[" << i <<"]=" <<nxy[2*i]<<"\n";
-            cout << "normal_y[" << i <<"]="<<nxy[2*i+1]<<"\n";
-			v.push_back(nxy[2*i]);
-			v.push_back(nxy[2*i+1]);
+            cout << "normal_x[" << i <<"]=" <<nxy[2*i]<<", ";
+            cout << "normal_y[" << i <<"]="<<nxy[2*i+1]<<endl;
+			// v.push_back(nxy[2*i]);
+			// v.push_back(nxy[2*i+1]);
 			// cout << "x[" << i << "][" << 0 << "] = " << v[2*i] << ",";
 			// cout << "x[" << i << "][" << 1 << "] = " << v[2*i+1] << '\n';
 
@@ -50,7 +50,8 @@ void normal_angle(const double* nxy,int* angle,const int size)
             double az = atan(angle) * unit_r;//convert to degree
 			v_angle.push_back((int)az);
             // v_angle[i]=(int)az;
-            cout << "angle=" <<(int)az<<"度"<<'\n';
+            cout << "angle=" <<(int)az<<"度"<<endl;
+
 		// }
 	}
 
