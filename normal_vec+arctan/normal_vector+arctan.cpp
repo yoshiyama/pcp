@@ -109,6 +109,12 @@ int main(int argc, char** argv)
     pcl::io::savePCDFileASCII (argv[2], *out_cloud);
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////
+//
+// using vector
+//
+// calculate angle
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
 	int m = out_cloud->points.size();
 	int n = 2;//x,yで二つ
 //This is for saving normal vectors but just only x,y
@@ -128,10 +134,11 @@ int main(int argc, char** argv)
 			v[i][1]=(float)normals->points[i].normal_y;
 			cout << "x[" << i << "][" << 0 << "] = " << v[i][0] << ",";
 			cout << "x[" << i << "][" << 1 << "] = " << v[i][1] << ',';
-            double n_x=v[i][0];
-            double n_y=v[i][1];
-            double angle = n_y/n_x;
-            double az = atan(angle) * unit_r;
+
+            double n_x=v[i][0];//for calculating angle
+            double n_y=v[i][1];//for calculating angle
+            double angle = n_y/n_x;//radian
+            double az = atan(angle) * unit_r;//convert to degree
             cout << "angle=" <<(int)az<<"度"<<'\n';
 		// }
 	}
