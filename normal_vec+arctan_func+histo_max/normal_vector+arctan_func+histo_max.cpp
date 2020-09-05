@@ -86,6 +86,8 @@ int main(int argc, char** argv)
 
     //点群の変換開始
 	//ポインタのメンバにアクセスする(アロー演算子)
+	// init data on pcd
+	// void init_pcd_write()
     out_cloud->width=cloud->width;
     out_cloud->height=cloud->height;  
     out_cloud->is_dense=cloud->is_dense;
