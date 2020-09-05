@@ -99,6 +99,8 @@ int main(int argc, char** argv)
 	//ofs.open(argv[2]);
 
 	int p_size;
+	p_size = cloud->points.size();
+	cout << "p_size=" << p_size <<endl;
 	vector<double> n_v(p_size);//for storing normal vectors
 	vector<int> ang(p_size); //
 	vector<int> h_freq(p_size); //
@@ -109,9 +111,11 @@ int main(int argc, char** argv)
 	for(size_t i=0; i < out_cloud->points.size() ; ++i)
 	// for(size_t i=0; i < cloud->points.size() ; ++i)
 	{
+		// cout<<"before_go["<<i<<"]"<<endl;
         out_cloud->points[i].x = cloud->points[i].x;
         out_cloud->points[i].y = cloud->points[i].y;
         out_cloud->points[i].z = cloud->points[i].z;
+		// cout<<"before_go_1["<<i<<"]"<<endl;
 	//arrow->演算子
     //色情報を強引に変更している部分
         // r = cloud->points[i].r;
@@ -121,10 +125,13 @@ int main(int argc, char** argv)
         // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
         out_cloud->points[i].normal_x = normals->points[i].normal_x;
         out_cloud->points[i].normal_y = normals->points[i].normal_y;
+		// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
 		n_v[2*i] = normals->points[i].normal_x;
 		n_v[2*i+1] = normals->points[i].normal_y;
+		// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
         out_cloud->points[i].normal_z = normals->points[i].normal_z;
         out_cloud->points[i].curvature = normals->points[i].curvature;
+		cout<<"go["<<i<<"]"<<endl;
 	}
     pcl::io::savePCDFileASCII (argv[2], *out_cloud);
 	cout<<"done\n";
@@ -142,7 +149,7 @@ int main(int argc, char** argv)
 	int h_cls = 180;
 	int h_hb = 1;
 	int h_low = -90;
-
+	cout<<"angle calculation done\n";
 	histo(p_size, h_cls, h_hb,h_low,&ang[0],&h_freq[0]);
 // 	int m = out_cloud->points.size();
 // 	int n = 2;//x,yで二つ
