@@ -32,7 +32,8 @@ Output file:
 #include <pcl/features/normal_3d.h>
 
 #include "normal_angle.hpp"
-#include 
+#include "histo.hpp"
+#include "f_max.hpp"
 
 using namespace std;
 
@@ -100,7 +101,7 @@ int main(int argc, char** argv)
 	int p_size;
 	vector<double> n_v(p_size);//for storing normal vectors
 	vector<int> ang(p_size); //
-
+	vector<int> h_freq(p_size); //
 	p_size = out_cloud->points.size();
 
 	cout<<"done1\n";
@@ -137,8 +138,12 @@ int main(int argc, char** argv)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// void normal_angle(const double* nxy,int* angle,const int size);
-	normal_angle(&n_v[0],&ang[0],p_size);	
+	normal_angle(&n_v[0],&ang[0],p_size);
+	int h_cls = 180;
+	int h_hb = 1;
+	int h_low = -90;
 
+	histo(p_size, h_cls, h_hb,h_low,&ang[0],&h_freq[0]);
 // 	int m = out_cloud->points.size();
 // 	int n = 2;//x,yで二つ
 // //This is for saving normal vectors but just only x,y
