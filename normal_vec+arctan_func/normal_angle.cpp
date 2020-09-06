@@ -5,20 +5,23 @@
 
 using namespace std;
 
+// int m;
+// vector<int> v_angle(m);//for saving angle
+
 //void normal_angle(double* nx,double*ny,int size)
-void normal_angle(const double* nxy, int* angle, const int size)
+void normal_angle(const double* nxy, vector<int>* v_angle, const int size)
 {
     // int m = out_cloud->points.size();
 	// int n = 2;//x,yで二つ
-    int m;
-	// int n = 2;//x,yで二つ
+    // int m;
+	// // int n = 2;//x,yで二つ
 
-    // vector<vector<double>> v(m, vector<double>(n));
+    // // vector<vector<double>> v(m, vector<double>(n));
 
-    // vector<int> v(2*m);//for saving normal_x・y
-    vector<int> v_angle(m);//for saving angle
+    // // vector<int> v(2*m);//for saving normal_x・y
+    // vector<int> v_angle(m);//for saving angle
 
-    m=size;
+    // m=size;
     //angle calculation
     double pi = 2.0 * asin(1.0);       // πの値
     double unit_r = 180.0 / pi;        // ラジアン → 度
@@ -48,9 +51,13 @@ void normal_angle(const double* nxy, int* angle, const int size)
 
             double angle = nxy[2*i+1]/nxy[2*i];//radian
             double az = atan(angle) * unit_r;//convert to degree
-			v_angle.push_back((int)az);
-            // v_angle[i]=(int)az;
-            cout << "angle=" <<(int)az<<"度"<<endl;
+			if(nxy[2*i]!=nan)
+			{
+				v_angle->push_back((int)az);
+				// v_angle[i]=(int)az;
+				cout << "angle=" <<(int)az<<"度"<<endl;
+			}
+
 
 		// }
 	}

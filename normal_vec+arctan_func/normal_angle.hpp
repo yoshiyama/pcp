@@ -1,2 +1,5 @@
 // void normal_angle(double* nx,double*ny,)
-void normal_angle(const double* nxy,int* angle,const int size);
+// #include <vector>
+using namespace std;
+
+void normal_angle(const double* nxy, vector<int>* v_angle, const int size);

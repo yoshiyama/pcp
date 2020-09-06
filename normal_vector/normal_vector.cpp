@@ -26,6 +26,7 @@ Output file:
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/filters/filter.h>
 
 using namespace std;
 
@@ -74,6 +75,11 @@ int main(int argc, char** argv)
 	
 	// Compute the features
 	ne.compute (*normals);
+
+	// std::vector<int> mapping_target_match;
+    // pcl::removeNaNFromPointCloud(*cloud_target_match, *cloud_target_match, mapping_target_match);
+	// pcl::removeNaNNormalsFromPointCloud
+
 	//smart pointer for savingpw
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_cloud(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
     //u_int32_t r = 0, g = 0, b = 0;
@@ -107,9 +113,13 @@ int main(int argc, char** argv)
         out_cloud->points[i].normal_z=normals->points[i].normal_z;
         out_cloud->points[i].curvature=normals->points[i].curvature;
 	}
+	std::vector<int> match_index;
+	pcl::removeNaNNormalsFromPointCloud(*out_cloud,*out_cloud,match_index);
+
     pcl::io::savePCDFileASCII (argv[2], *out_cloud);
 
 	int m=out_cloud->points.size();
+	// int m=out_cloud->points.size();
 	int n=2;//x,yで二つ
 
 	vector<vector<float> >v(m, vector<float>(n));
@@ -121,8 +131,10 @@ int main(int argc, char** argv)
 		// for (size_t j = 0; j < n; ++j) //retsu
 		// {
 			// cout << "x[" << i << "][" << j << "] = " << x[i][j] << '\n';
-			v[i][0]=(float)normals->points[i].normal_x;
-			v[i][1]=(float)normals->points[i].normal_y;
+			// v[i][0]=(float)normals->points[i].normal_x;
+			// v[i][1]=(float)normals->points[i].normal_y;
+			v[i][0]=(float)out_cloud->points[i].normal_x;
+			v[i][1]=(float)out_cloud->points[i].normal_y;
 			cout << "x[" << i << "][" << 0 << "] = " << v[i][0] << ",";
 			cout << "x[" << i << "][" << 1 << "] = " << v[i][1] << '\n';
 		// }

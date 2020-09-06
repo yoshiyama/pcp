@@ -129,7 +129,7 @@ int main(int argc, char** argv)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// void normal_angle(const double* nxy,int* angle,const int size);
-	normal_angle(&n_v[0],&ang[0],p_size);	
+	normal_angle(&n_v[0],&ang,p_size);	
 
 // 	int m = out_cloud->points.size();
 // 	int n = 2;//x,yで二つ

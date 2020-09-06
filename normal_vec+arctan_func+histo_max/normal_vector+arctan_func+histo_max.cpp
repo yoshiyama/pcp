@@ -30,6 +30,7 @@ Output file:
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/filters/filter.h>
 
 #include "normal_angle.hpp"
 #include "histo.hpp"
@@ -133,6 +134,9 @@ int main(int argc, char** argv)
         out_cloud->points[i].curvature = normals->points[i].curvature;
 		cout<<"go["<<i<<"]"<<endl;
 	}
+
+	std::vector<int> match_index;
+	pcl::removeNaNNormalsFromPointCloud(*out_cloud,*out_cloud,match_index);
     pcl::io::savePCDFileASCII (argv[2], *out_cloud);
 	cout<<"done\n";
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,6 +149,7 @@ int main(int argc, char** argv)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// void normal_angle(const double* nxy,int* angle,const int size);
+	p_size = out_cloud->points.size();
 	normal_angle(&n_v[0],&ang[0],p_size);
 	int h_cls = 180;
 	int h_hb = 1;
