@@ -5,11 +5,12 @@
 
 using namespace std;
 
-int m;
-vector<int> v_angle(m);//for saving angle
+// int m;
+// vector<int> v_angle(m);//for saving angle
+// vector<double> v_nxy(2*m);//for saving angle
 
 //void normal_angle(double* nx,double*ny,int size)
-void normal_angle(const double* nxy, vector<int>* v_angle, const int size)
+void normal_angle(const vector<double>* v_nxy, vector<int>* v_angle, const int size)
 {
 // void normal_angle(const double* nxy, int* angle, const int size)
 // {
@@ -41,8 +42,8 @@ void normal_angle(const double* nxy, vector<int>* v_angle, const int size)
 			// v[i][1]=nxy[i][1];
 			// v[i][0]=nxy[2*i];
 			// v[i][1]=nxy[2*i+1];
-            cout << "normal_x[" << i <<"]=" <<nxy[2*i]<<", ";
-            cout << "normal_y[" << i <<"]="<<nxy[2*i+1]<<endl;
+            cout << "normal_x[" << i <<"]=" <<v_nxy->at(2*i)<<", ";
+            cout << "normal_y[" << i <<"]="<<v_nxy->at(2*i+1)<<endl;
 			// v.push_back(nxy[2*i]);
 			// v.push_back(nxy[2*i+1]);
 			// cout << "x[" << i << "][" << 0 << "] = " << v[2*i] << ",";
@@ -51,7 +52,9 @@ void normal_angle(const double* nxy, vector<int>* v_angle, const int size)
             // double n_x=v[i][0];//for calculating angle
             // double n_y=v[i][1];//for calculating angle
 
-            double angle = nxy[2*i+1]/nxy[2*i];//radian
+			double yy = v_nxy->at(2*i+1);
+
+            double angle = v_nxy->at(2*i+1) / v_nxy->at(2*i);//radian
             double az = atan(angle) * unit_r;//convert to degree
 			v_angle->push_back((int)az);
             // v_angle[i]=(int)az;

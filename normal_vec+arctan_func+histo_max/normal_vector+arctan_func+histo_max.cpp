@@ -127,8 +127,8 @@ int main(int argc, char** argv)
         out_cloud->points[i].normal_x = normals->points[i].normal_x;
         out_cloud->points[i].normal_y = normals->points[i].normal_y;
 		// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
-		n_v[2*i] = normals->points[i].normal_x;
-		n_v[2*i+1] = normals->points[i].normal_y;
+		// n_v[2*i] = normals->points[i].normal_x;
+		// n_v[2*i+1] = normals->points[i].normal_y;
 		// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
         out_cloud->points[i].normal_z = normals->points[i].normal_z;
         out_cloud->points[i].curvature = normals->points[i].curvature;
@@ -137,8 +137,35 @@ int main(int argc, char** argv)
 
 	std::vector<int> match_index;
 	pcl::removeNaNNormalsFromPointCloud(*out_cloud,*out_cloud,match_index);
+
     pcl::io::savePCDFileASCII (argv[2], *out_cloud);
 	cout<<"done\n";
+	
+	for(size_t i=0; i < out_cloud->points.size() ; ++i)
+	// for(size_t i=0; i < cloud->points.size() ; ++i)
+	{
+		// cout<<"before_go["<<i<<"]"<<endl;
+        // out_cloud->points[i].x = cloud->points[i].x;
+        // out_cloud->points[i].y = cloud->points[i].y;
+        // out_cloud->points[i].z = cloud->points[i].z;
+		// cout<<"before_go_1["<<i<<"]"<<endl;
+	//arrow->演算子
+    //色情報を強引に変更している部分
+        // r = cloud->points[i].r;
+        // g = cloud->points[i].g;
+        // b = cloud->points[i].b;
+        // out_cloud->points[i].rgb=cloud->points[i].rgb;
+        // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
+        // out_cloud->points[i].normal_x = normals->points[i].normal_x;
+        // out_cloud->points[i].normal_y = normals->points[i].normal_y;
+		// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
+		n_v[2*i] = out_cloud->points[i].normal_x;
+		n_v[2*i+1] = out_cloud->points[i].normal_y;
+		// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
+        // out_cloud->points[i].normal_z = normals->points[i].normal_z;
+        // out_cloud->points[i].curvature = normals->points[i].curvature;
+		// cout<<"go["<<i<<"]"<<endl;
+	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////
 //
@@ -150,7 +177,8 @@ int main(int argc, char** argv)
 
 	// void normal_angle(const double* nxy,int* angle,const int size);
 	p_size = out_cloud->points.size();
-	normal_angle(&n_v[0],&ang[0],p_size);
+	// normal_angle(&n_v[0],&ang,p_size);
+	normal_angle(&n_v,&ang,p_size);
 	int h_cls = 180;
 	int h_hb = 1;
 	int h_low = -90;
