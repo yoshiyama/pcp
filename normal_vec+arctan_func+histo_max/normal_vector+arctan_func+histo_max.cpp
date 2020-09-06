@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 	// normal_angle(&n_v[0],&ang,p_size);
 	normal_angle(&n_v,&ang,p_size);
 
-	int h_cls = 180;
+	int h_cls = 182;
 	int h_hb = 1;
 	int h_low = -90;
 	cout<<"angle calculation done\n";
@@ -194,6 +194,10 @@ int main(int argc, char** argv)
 	cout << "階級幅=" << h_hb <<endl;
 	cout << "最小=" << h_low <<endl;	
 	histo(p_size, h_cls, h_hb,h_low,&ang,&h_freq);
+
+	int id_v=0;
+	f_max(&h_freq,&id_v);
+	cout<<"最大要素数を持つ偏角は"<<id_v + h_low <<"度です"<<endl;
 // 	int m = out_cloud->points.size();
 // 	int n = 2;//x,yで二つ
 // //This is for saving normal vectors but just only x,y

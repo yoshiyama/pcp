@@ -32,8 +32,7 @@ void histo(const int size, const int cls, const int hb,const int low,const vecto
             }
         }
     }
-
-    cout <<"low="<<low<<endl;
+    // cout <<"low="<<low<<endl;
     // for (int i = 0; i < M; i++) 
     for (int i = 0; i < cls; ++i) 
 	{
@@ -42,7 +41,7 @@ void histo(const int size, const int cls, const int hb,const int low,const vecto
         // cout <<"hb="<<hb<<endl;
         // cout <<"low+hb*i="<<low+(hb*i)<<endl;
 	// printf("%.1f - %.1f | ", low + z * i, low + z * (i + 1));
-        std::cout<< low + hb * i << "-" << low + hb * (i + 1) <<"|";//("%.1f - %.1f | ", , low + z * (i + 1));
+        std::cout<<"["<< low + hb * i << "-" << low + hb * (i + 1) <<")|";//("%.1f - %.1f | ", , low + z * (i + 1));
         // std::cout<< v_freq[i]<< " " << cum[i] <<"\n";//("%.1f - %.1f | ", , low + z * (i + 1));
         std::cout<< freq->at(i)<< " " <<"\n";//("%.1f - %.1f | ", , low + z * (i + 1));
 	// printf("%3d %3d\n", freq[i], cum[i]);

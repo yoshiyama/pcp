@@ -52,17 +52,37 @@ void normal_angle(const vector<double>* v_nxy, vector<int>* v_angle, const int s
             // double n_x=v[i][0];//for calculating angle
             // double n_y=v[i][1];//for calculating angle
 
-			// double yy = v_nxy->at(2*i+1);
+			// double x = v_nxy->at(2*i);
+			// double y = v_nxy->at(2*i+1);
 			
-            double angle = v_nxy->at(2*i+1) / v_nxy->at(2*i);//radian
-			cout << "angle_calc"<<endl;
-            double az = atan(angle) * unit_r;//convert to degree
-			cout << "convert to degree"<<endl;
-			// v_angle->push_back((int)az);
-			v_angle->at(i) = ((int)az);
-            // v_angle[i]=(int)az;
-            cout << "angle=" <<(int)az<<"度"<<endl;
 
+			if(v_nxy->at(2*i)==0 && v_nxy->at(2*i+1)>0)
+			{
+				// v_angle->at(i) = ((int)az);
+				v_angle->at(i) = 90;
+				cout << "angle=" <<v_angle->at(i)<<"度"<<endl;
+			}
+			else if(v_nxy->at(2*i)==0 && v_nxy->at(2*i+1)==0)
+			{
+				v_angle->at(i) = 91;
+				cout << "angle=" <<v_angle->at(i)<<"度"<<endl;			
+			}
+			else if(v_nxy->at(2*i)==0 && v_nxy->at(2*i+1)<0)
+			{
+				v_angle->at(i) = -90;
+				cout << "angle=" <<v_angle->at(i)<<"度"<<endl;		
+			}
+			else
+			{
+				double angle = v_nxy->at(2*i+1) / v_nxy->at(2*i);//radian
+				cout << "angle_calc"<<endl;
+				double az = atan(angle) * unit_r;//convert to degree
+				cout << "convert to degree"<<endl;
+				// v_angle->push_back((int)az);
+				v_angle->at(i) = ((int)az);
+				// v_angle[i]=(int)az;
+				cout << "angle=" <<(int)az<<"度"<<endl;
+			}
 		// }
 	}
 
