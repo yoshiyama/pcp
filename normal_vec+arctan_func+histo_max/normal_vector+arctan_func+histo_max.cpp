@@ -32,11 +32,13 @@ Output file:
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/filter.h>
 
-#include "normal_angle.hpp"
-#include "histo.hpp"
-#include "f_max.hpp"
 
 using namespace std;
+
+#include "f_max.hpp"
+#include "normal_angle.hpp"
+#include "histo.hpp"
+
 
 // string getFileName();
 
@@ -102,9 +104,9 @@ int main(int argc, char** argv)
 	int p_size;
 	p_size = cloud->points.size();
 	cout << "p_size=" << p_size <<endl;
-	vector<double> n_v(p_size);//for storing normal vectors
-	vector<int> ang(p_size); //
-	vector<int> h_freq(p_size); //
+	// vector<double> n_v(p_size);//for storing normal vectors
+	// vector<int> ang(p_size); //
+	// vector<int> h_freq(p_size); //
 	p_size = out_cloud->points.size();
 
 	cout<<"done1\n";
@@ -141,6 +143,10 @@ int main(int argc, char** argv)
     pcl::io::savePCDFileASCII (argv[2], *out_cloud);
 	cout<<"done\n";
 	
+	vector<double> n_v(2*(out_cloud->points.size()));//for storing normal vectors
+	vector<int> ang(out_cloud->points.size()); //
+	vector<int> h_freq(out_cloud->points.size()); //
+
 	for(size_t i=0; i < out_cloud->points.size() ; ++i)
 	// for(size_t i=0; i < cloud->points.size() ; ++i)
 	{
@@ -179,11 +185,15 @@ int main(int argc, char** argv)
 	p_size = out_cloud->points.size();
 	// normal_angle(&n_v[0],&ang,p_size);
 	normal_angle(&n_v,&ang,p_size);
+
 	int h_cls = 180;
 	int h_hb = 1;
 	int h_low = -90;
 	cout<<"angle calculation done\n";
-	histo(p_size, h_cls, h_hb,h_low,&ang[0],&h_freq[0]);
+	cout << "階級数=" << h_cls <<endl;
+	cout << "階級幅=" << h_hb <<endl;
+	cout << "最小=" << h_low <<endl;	
+	histo(p_size, h_cls, h_hb,h_low,&ang,&h_freq);
 // 	int m = out_cloud->points.size();
 // 	int n = 2;//x,yで二つ
 // //This is for saving normal vectors but just only x,y
