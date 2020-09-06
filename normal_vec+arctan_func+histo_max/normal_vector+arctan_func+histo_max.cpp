@@ -198,6 +198,7 @@ int main(int argc, char** argv)
 	int id_v=0;
 	f_max(&h_freq,&id_v);
 	cout<<"最大要素数を持つ偏角は"<<id_v + h_low <<"度です"<<endl;
+	cout<<"ここでの偏角は，ｘ軸に対して"<<endl;
 // 	int m = out_cloud->points.size();
 // 	int n = 2;//x,yで二つ
 // //This is for saving normal vectors but just only x,y
