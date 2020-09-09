@@ -153,6 +153,9 @@ main (int argc, char** argv)
   // You can either apply transform_1 or transform_2; they are the same
   pcl::transformPointCloud (*source_cloud, *transformed_cloud, transform_2);
 
+  pcl::io::savePCDFileASCII ("trans.pcd", *transformed_cloud);
+  // std::cerr << "Saved " << transformed_cloud.size () << " data points to test_pcd.pcd." << std::endl;
+
   // Visualization
   printf(  "\nPoint cloud colors :  white  = original point cloud\n"
       "                        red  = transformed point cloud\n");
