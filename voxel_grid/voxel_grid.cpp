@@ -34,36 +34,45 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
-
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/filters/voxel_grid.h>
 
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  // pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud_filtered (new pcl::PCLPointCloud2 ());
 
   // Fill in the cloud data
-  cloud.width    = 5;
-  cloud.height   = 1;
-  cloud.is_dense = false;
-  cloud.points.resize (cloud.width * cloud.height);
+  pcl::PCDReader reader;
+  // Replace the path below with the path where you saved your file
+  // reader.read ("table_scene_lms400.pcd", *cloud); // Remember to download the file first!
+  reader.read (argv[1], *cloud); // Remember to download the file first!
 
-  for (auto& point: cloud)
-  {
-    point.x = 1024 * rand () / (RAND_MAX + 1.0f);
-    point.y = 1024 * rand () / (RAND_MAX + 1.0f);
-    point.z = 1024 * rand () / (RAND_MAX + 1.0f);
-  }
+  std::cerr << "PointCloud before filtering: " << cloud->width * cloud->height 
+       << " data points (" << pcl::getFieldsList (*cloud) << ")." << std::endl;
 
-  // pcl::io::savePCDFileASCII ("test_pcd.pcd", cloud);
-  pcl::io::savePCDFileASCII (argv[1], cloud);
-  std::cerr << "Saved " << cloud.size () << " data points to test_pcd.pcd." << std::endl;
+  // Create the filtering object
+  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
+  sor.setInputCloud (cloud);
+  sor.setLeafSize (0.01f, 0.01f, 0.01f);
+  sor.filter (*cloud_filtered);
 
-  for (const auto& point: cloud)
-    std::cerr << "    " << point.x << " " << point.y << " " << point.z << std::endl;
+  std::cerr << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height 
+       << " data points (" << pcl::getFieldsList (*cloud_filtered) << ")." << std::endl;
+
+//   pcl::io::savePCDFileASCII (argv[1], cloud);
+//   std::cerr << "Saved " << cloud.size () << " data points to test_pcd.pcd." << std::endl;
+
+//   pcl::PCDWriter writer;
+//   writer.write ("table_scene_lms400_downsampled.pcd", *cloud_filtered, 
+//          Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), false);
+
+  pcl::PCDWriter writer;
+  writer.write (argv[2], *cloud_filtered, 
+         Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), false);
 
   return (0);
 }
