@@ -59,7 +59,8 @@ main (int argc, char** argv)
 {
 
   // Show help
-  if (pcl::console::find_switch (argc, argv, "-h") || pcl::console::find_switch (argc, argv, "--help")) {
+  if (pcl::console::find_switch (argc, argv, "-h") || pcl::console::find_switch (argc, argv, "--help")) 
+  {
     showHelp (argv[0]);
     return 0;
   }
@@ -144,10 +145,15 @@ main (int argc, char** argv)
   Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
 
   // Define a translation of 2.5 meters on the x axis.
-  transform_2.translation() << 2.5, 0.0, 0.0;
+  // transform_2.translation() << 2.5, 0.0, 0.0;
+  int tx=0;
+  tx=atof(argv[3]);
+  transform_2.translation() << tx, 0.0, 0.0;
 
 
   // The same rotation matrix as before; theta radians around Z axis
+  // transform_2.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
+  theta = atof(argv[4]);
   transform_2.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
 
   // Print the transformation
