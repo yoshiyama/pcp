@@ -11,6 +11,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/conversions.h>
+#include <pcl/impl/point_types.hpp>
 
 int
 main (int argc, char** argv)
@@ -25,7 +26,7 @@ main (int argc, char** argv)
   reader.read (argv[1], *cloud2); // Remember to download the file first!
   //fromPCLPointCloud2 
   std::cout << "2" << std::endl;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   //fromPCLPointCloud2 
   std::cout << "3" << std::endl;
  
@@ -41,8 +42,17 @@ main (int argc, char** argv)
             << cloud->width * cloud->height
             << " data points from test_pcd.pcd with the following fields: "
             << std::endl;
+  
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
+    // uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+    uint32_t rgb = *reinterpret_cast<int*>(&cloud->points[i].rgb);
+    uint8_t r = (rgb >> 16) & 0x0000ff;
+    uint8_t g = (rgb >> 8)  & 0x0000ff;
+    uint8_t b = (rgb)       & 0x0000ff;
+    // uint8_t r = (rgb >> 16) & 0x0000ff;
+    // uint8_t g = (rgb >> 8)  & 0x0000ff;
+    // uint8_t b = (rgb)       & 0x0000ff;
     std::cout << "    " << cloud->points[i].x
               << " "    << cloud->points[i].y
               << " "    << cloud->points[i].z 
