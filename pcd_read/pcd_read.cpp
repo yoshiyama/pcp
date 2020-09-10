@@ -37,7 +37,6 @@ main (int argc, char** argv)
   // }
   std::cout << "4" << std::endl;
  
-
   std::cout << "Loaded "
             << cloud->width * cloud->height
             << " data points from test_pcd.pcd with the following fields: "
@@ -49,7 +48,6 @@ main (int argc, char** argv)
               << " "    << cloud->points[i].z 
               << std::endl;
   }
-
 
   return (0);
 }
