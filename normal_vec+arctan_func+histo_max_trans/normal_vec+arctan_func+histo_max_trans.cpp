@@ -31,7 +31,8 @@ Output file:
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/filter.h>
-
+#include <pcl/conversions.h>
+#include <pcl/common/transforms.h>
 
 using namespace std;
 
@@ -44,9 +45,9 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	if (argc != 4)
+	if (argc != 5)
     {
-        cout << "Error!\n **.exe input.pcd output.pcd radius[m]\n";
+        cout << "Error!\n **.exe input.pcd output.pcd radius[m] trans[m]\n";
             return 0;
     }
 
@@ -140,8 +141,8 @@ int main(int argc, char** argv)
 	std::vector<int> match_index;
 	pcl::removeNaNNormalsFromPointCloud(*out_cloud,*out_cloud,match_index);
 
-    pcl::io::savePCDFileASCII (argv[2], *out_cloud);
-	cout<<"done\n";
+    // pcl::io::savePCDFileASCII (argv[2], *out_cloud);
+	// cout<<"done\n";
 	
 	vector<double> n_v(2*(out_cloud->points.size()));//for storing normal vectors
 	vector<int> ang(out_cloud->points.size()); //
@@ -200,8 +201,32 @@ int main(int argc, char** argv)
 	cout<<"最大要素数を持つ偏角は"<<id_v + h_low <<"度です"<<endl;
 	cout<<"ここでの偏角は，ｘ軸に対して"<<endl;
 
+ 	Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
+
 	//trans rotate
-	
+	int tx=0;
+	tx=atof(argv[4]);
+
+	transform_2.translation() << tx, 0.0, 0.0;
+
+	// The same rotation matrix as before; theta radians around Z axis
+	// transform_2.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
+	float theta = ((float)(id_v + h_low)/180)*M_PI;
+	transform_2.rotate (Eigen::AngleAxisf (-theta, Eigen::Vector3f::UnitZ()));
+
+	cout<< "theta=" << theta <<endl;
+
+	cout << "\nMethod #2: using an Affine3f\n";
+	std::cout << transform_2.matrix() << std::endl;
+
+	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
+
+  	pcl::transformPointCloud (*out_cloud, *transformed_cloud, transform_2);
+
+  	pcl::PCDWriter writer;
+  	writer.write<pcl::PointXYZRGBNormal> (argv[2], *transformed_cloud, false);
+
+
 // 	int m = out_cloud->points.size();
 // 	int n = 2;//x,yで二つ
 // //This is for saving normal vectors but just only x,y

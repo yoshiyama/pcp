@@ -1,4 +1,4 @@
-set(basic normal_vector+arctan_func+histo_max_trans)
+set(basic normal_vec+arctan_func+histo_max_trans)
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(${basic})
 find_package(PCL 1.2 REQUIRED)
