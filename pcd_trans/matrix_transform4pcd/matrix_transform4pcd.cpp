@@ -89,7 +89,8 @@ main (int argc, char** argv)
   }
 
   // Load file | Works with PCD and PLY files
-  pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  // pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_cloud (new pcl::PointCloud<pcl::PointXYZRGB> ());
 
   if (file_is_pcd) 
   {
@@ -154,7 +155,8 @@ main (int argc, char** argv)
   std::cout << transform_2.matrix() << std::endl;
 
   // Executing the transformation
-  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  // pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZRGB> ());
   // You can either apply transform_1 or transform_2; they are the same
   pcl::transformPointCloud (*source_cloud, *transformed_cloud, transform_2);
 
@@ -163,27 +165,27 @@ main (int argc, char** argv)
   // std::cerr << "Saved " << transformed_cloud.size () << " data points to test_pcd.pcd." << std::endl;
 
   // Visualization
-  printf(  "\nPoint cloud colors :  white  = original point cloud\n"
-      "                        red  = transformed point cloud\n");
-  pcl::visualization::PCLVisualizer viewer ("Matrix transformation example");
+  // printf(  "\nPoint cloud colors :  white  = original point cloud\n"
+  //     "                        red  = transformed point cloud\n");
+  // pcl::visualization::PCLVisualizer viewer ("Matrix transformation example");
 
-   // Define R,G,B colors for the point cloud
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> source_cloud_color_handler (source_cloud, 255, 255, 255);
-  // We add the point cloud to the viewer and pass the color handler
-  viewer.addPointCloud (source_cloud, source_cloud_color_handler, "original_cloud");
+  //  // Define R,G,B colors for the point cloud
+  // pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> source_cloud_color_handler (source_cloud, 255, 255, 255);
+  // // We add the point cloud to the viewer and pass the color handler
+  // viewer.addPointCloud (source_cloud, source_cloud_color_handler, "original_cloud");
 
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_cloud_color_handler (transformed_cloud, 230, 20, 20); // Red
-  viewer.addPointCloud (transformed_cloud, transformed_cloud_color_handler, "transformed_cloud");
+  // pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_cloud_color_handler (transformed_cloud, 230, 20, 20); // Red
+  // viewer.addPointCloud (transformed_cloud, transformed_cloud_color_handler, "transformed_cloud");
 
-  viewer.addCoordinateSystem (1.0, "cloud", 0);
-  viewer.setBackgroundColor(0.05, 0.05, 0.05, 0); // Setting background to a dark grey
-  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "original_cloud");
-  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "transformed_cloud");
-  //viewer.setPosition(800, 400); // Setting visualiser window position
+  // viewer.addCoordinateSystem (1.0, "cloud", 0);
+  // viewer.setBackgroundColor(0.05, 0.05, 0.05, 0); // Setting background to a dark grey
+  // viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "original_cloud");
+  // viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "transformed_cloud");
+  // //viewer.setPosition(800, 400); // Setting visualiser window position
 
-  while (!viewer.wasStopped ()) { // Display the visualiser until 'q' key is pressed
-    viewer.spinOnce ();
-  }
+  // while (!viewer.wasStopped ()) { // Display the visualiser until 'q' key is pressed
+  //   viewer.spinOnce ();
+  // }
 
   return 0;
 }
