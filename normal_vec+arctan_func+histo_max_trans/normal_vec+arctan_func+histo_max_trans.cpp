@@ -16,6 +16,8 @@ go.exe input.pcd output.pcd radius[m]
 
 Input file: PCD file -> X Y Z
 Output file:
+
+1.normal calculation
 ********************/
 
 
@@ -55,7 +57,10 @@ int main(int argc, char** argv)
 	rd=atof(argv[3]);
 
 	//smart pointer::変数の宣言，点群オブジェクトの宣言
+	//入力点群用のインスタンス
+	//pcl::PointCloud<pcl::PointXYZRGB>::Ptr型
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
+	//データの読み込み
 	if(pcl::io::loadPCDFile(argv[1], *cloud) == -1)
 	{
 		PCL_ERROR("Coudn't read PCD file\n");
@@ -72,7 +77,7 @@ int main(int argc, char** argv)
 	
 	//This is smart pointer, too.
 	// const pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
-	const pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
+	pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
 
 	//Create an empty kdtree representation, and pass it to the normal estimation object.
 	//Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
@@ -204,10 +209,10 @@ int main(int argc, char** argv)
  	Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
 
 	//trans rotate
-	int tx=0;
-	tx=atof(argv[4]);
+	int ty=0;
+	ty=atof(argv[4]);
 
-	transform_2.translation() << tx, 0.0, 0.0;
+	transform_2.translation() <<0.0, -ty, 0.0;
 
 	// The same rotation matrix as before; theta radians around Z axis
 	// transform_2.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
