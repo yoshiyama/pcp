@@ -9,7 +9,7 @@
 // All rights reserved.
 
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions
+// modification, are permitted providethat the following conditions
 // are met: 
 
 //  * Redistributions of source code must retain the above copyright
@@ -34,6 +34,12 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
+////////////////////////////////////////////////////////////////////
+//
+//
+// voxel_grid inputf outputf voxel_leaf_size_x[m] voxel_leaf_y voxel_leaf_z
+//
+//
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
@@ -42,6 +48,12 @@
 int
 main (int argc, char** argv)
 {
+  	if (argc != 6)
+    {
+        std::cout << "Error!\n **.exe input.pcd output.pcd leaf_size_x[m] leaf_size_y[m] leaf_size_z[m] \n";
+            return 0;
+    }
+
   pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
   pcl::PCLPointCloud2::Ptr cloud_filtered (new pcl::PCLPointCloud2 ());
 
@@ -55,11 +67,20 @@ main (int argc, char** argv)
        << " data points (" << pcl::getFieldsList (*cloud) << ")." << std::endl;
 
   // Create the filtering object
-  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
+  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;//voxelgridのデータ型．実体．
   sor.setInputCloud (cloud);
-  sor.setLeafSize (0.01f, 0.01f, 0.01f);
+
+  //Set the voxel grid leaf size. 
+  float l_x=atof(argv[3]);
+  float l_y=atof(argv[4]);
+  float l_z=atof(argv[5]);
+  
+  // sor.setLeafSize (0.01f, 0.01f, 0.01f);
+  sor.setLeafSize (l_x, l_y, l_z);
+  //Calls the filtering method and returns the filtered dataset in output. 
   sor.filter (*cloud_filtered);
 
+//Get the available point cloud fields as a space separated string. 
   std::cerr << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height 
        << " data points (" << pcl::getFieldsList (*cloud_filtered) << ")." << std::endl;
 
