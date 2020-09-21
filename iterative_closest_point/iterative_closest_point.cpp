@@ -42,20 +42,26 @@
 int
  main (int argc, char** argv)
 {
+
+    	if (argc != 6)
+    {
+        std::cout << "Error!\n **.exe input.pcd output.pcd leaf_size_x[m] leaf_size_y[m] leaf_size_z[m] \n";
+            return 0;
+    }
   // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new pcl::PointCloud<pcl::PointXYZ>(5,1));
-  pcl::PCLPointCloud2::Ptr cloud_in (new pcl::PCLPointCloud2 ());// Original point cloud
+  pcl::PCLPointCloud2::Ptr cloud_org (new pcl::PCLPointCloud2 ());// Original point cloud
   // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PCLPointCloud2::Ptr cloud_out (new pcl::PCLPointCloud2 ());// Transformed point cloud
+  pcl::PCLPointCloud2::Ptr cloud_move (new pcl::PCLPointCloud2 ());// Transformed point cloud
   pcl::PCLPointCloud2::Ptr cloud_icp (new pcl::PCLPointCloud2 ());// ICP output point cloud
 
   // Fill in the cloud data
   pcl::PCDReader reader;
   // Replace the path below with the path where you saved your file
   // reader.read ("table_scene_lms400.pcd", *cloud); // Remember to download the file first!
-  reader.read (argv[1], *cloud_in); // Remember to download the file first!
+  reader.read (argv[1], *cloud_org); // Remember to download the file first!
 
-  std::cerr << "PointCloud before filtering: " << cloud->width * cloud->height 
-       << " data points (" << pcl::getFieldsList (*cloud) << ")." << std::endl;
+  std::cerr << "PointCloud before filtering: " << cloud_org->width * cloud_org->height 
+       << " data points (" << pcl::getFieldsList (*cloud_org) << ")." << std::endl;
 
   // // Fill in the CloudIn data
   // for (auto& point : *cloud_in)
@@ -65,30 +71,35 @@ int
   //   point.z = 1024 * rand() / (RAND_MAX + 1.0f);
   // }
   
-  std::cout << "Saved " << cloud_in->size () << " data points to input:" << std::endl;
+  std::cout << "Saved " << cloud_org->size () << " data points to input:" << std::endl;
       
-  for (auto& point : *cloud_in)
-    std::cout << point << std::endl;
+  // for (auto& point : *cloud_in)
+  //   std::cout << point << std::endl;
       
-  *cloud_out = *cloud_in;
+  // *cloud_out = *cloud_in;
   
-  std::cout << "size:" << cloud_out->size() << std::endl;
-  for (auto& point : *cloud_out)
-    point.x += 0.7f;
+  // std::cout << "size:" << cloud_out->size() << std::endl;
+  // for (auto& point : *cloud_out)
+  //   point.x += 0.7f;
 
-  std::cout << "Transformed " << cloud_in->size () << " data points:" << std::endl;
+  // std::cout << "Transformed " << cloud_in->size () << " data points:" << std::endl;
       
-  for (auto& point : *cloud_out)
-    std::cout << point << std::endl;
+  // for (auto& point : *cloud_out)
+  //   std::cout << point << std::endl;
 
   // pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-  pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
-  icp.setInputSource(cloud_in);
-  icp.setInputTarget(cloud_out);
+  pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;//icpの実体
+  icp.setInputSource(cloud_org);//original
+  icp.setInputTarget(cloud_move);//transformed
   
-  // pcl::PointCloud<pcl::PointXYZ> Final;
+  // pcl::PointCloud<pcl::PointXYZ> Final;->for output
   pcl::PointCloud<pcl::PointXYZRGB> Final;
   // Perform the alignment
+  
+// Call the registration algorithm which estimates the transformation and returns the transformed source (input) as output.
+// Parameters
+//     [out]	output	the resultant input transformed point cloud dataset
+// Definition at line 155 of file registration.hpp.
   icp.align(Final);
   // Obtain the transformation that aligned cloud_source to cloud_source_registered
   Eigen::Matrix4f transformation = icp.getFinalTransformation ();
