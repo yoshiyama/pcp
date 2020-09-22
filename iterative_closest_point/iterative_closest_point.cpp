@@ -39,19 +39,21 @@
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 
+typedef pcl::PointXYZRGB PointT;
+
 int
- main (int argc, char** argv)
+ main (int argc, char** argv)//**argv = argv[0]
 {
 
     	if (argc != 6)
     {
-        std::cout << "Error!\n **.exe input.pcd output.pcd leaf_size_x[m] leaf_size_y[m] leaf_size_z[m] \n";
+        std::cout << "Error!\n **.exe input.pcd output.pcd max_cor_dst[m] iterations(how many) rmse[m] \n";
             return 0;
     }
   // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new pcl::PointCloud<pcl::PointXYZ>(5,1));
   pcl::PCLPointCloud2::Ptr cloud_org (new pcl::PCLPointCloud2 ());// Original point cloud
   // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PCLPointCloud2::Ptr cloud_move (new pcl::PCLPointCloud2 ());// Transformed point cloud
+  pcl::PCLPointCloud2::Ptr cloud_move (new pcl::PCLPointCloud2 ());// Transformed(move) point cloud
   pcl::PCLPointCloud2::Ptr cloud_icp (new pcl::PCLPointCloud2 ());// ICP output point cloud
 
   // Fill in the cloud data
@@ -88,12 +90,36 @@ int
   //   std::cout << point << std::endl;
 
   // pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-  pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;//icpの実体
+  pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
   icp.setInputSource(cloud_org);//original
   icp.setInputTarget(cloud_move);//transformed
   
+// https://qiita.com/AtsutoHigashi/items/40092f15a50897e68bef
+// 終了条件
+//
+//     ユーザーが設定した最大繰り返し数に到達したとき（setMaximumIterations）
+//     最新の変換とそのひとつ前の変換の差が、ユーザーが設定したε未満になったとき 　（setTransformationEpsilon）
+//     二つの点群のユークリッド二乗誤差の和が閾値未満のとき（setEuclideanFitnessEpsilon）
+
+
+  // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
+  double max_dst=0.0;
+  max_dst=atof(argv[3]);
+  // icp.setMaxCorrespondenceDistance (0.05);
+  icp.setMaxCorrespondenceDistance (max_dst);
+  // Set the maximum number of iterations (criterion 1)
+  int itr=0;
+  itr = atoi(argv[4]);
+  icp.setMaximumIterations (itr);
+  // Set the transformation epsilon (criterion 2)
+  icp.setTransformationEpsilon (1e-8);//10の-8乗
+  // Set the euclidean distance difference epsilon (criterion 3)
+  double rmse=0.0;
+  rmse = atof(argv[5]);
+  icp.setEuclideanFitnessEpsilon (rmse);
+
   // pcl::PointCloud<pcl::PointXYZ> Final;->for output
-  pcl::PointCloud<pcl::PointXYZRGB> Final;
+  pcl::PointCloud<PointT> Final;
   // Perform the alignment
   
 // Call the registration algorithm which estimates the transformation and returns the transformed source (input) as output.
@@ -101,6 +127,10 @@ int
 //     [out]	output	the resultant input transformed point cloud dataset
 // Definition at line 155 of file registration.hpp.
   icp.align(Final);
+
+  pcl::PCDWriter writer;
+  writer.write (argv[2], *Final, 
+         Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), false);
   // Obtain the transformation that aligned cloud_source to cloud_source_registered
   Eigen::Matrix4f transformation = icp.getFinalTransformation ();
 
