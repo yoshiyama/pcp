@@ -38,6 +38,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
+#include <pcl/PCLPointCloud2.h>
 
 typedef pcl::PointXYZRGB PointT;
 
@@ -51,10 +52,12 @@ int
             return 0;
     }
   // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new pcl::PointCloud<pcl::PointXYZ>(5,1));
-  pcl::PCLPointCloud2::Ptr cloud_org (new pcl::PCLPointCloud2 ());// Original point cloud
+  pcl::PointCloud<PointT>::Ptr cloud_org (new pcl::PointCloud<PointT>);
+  // pcl::PCLPointCloud2::Ptr cloud_org (new pcl::PCLPointCloud2 ());// Original point cloud
   // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PCLPointCloud2::Ptr cloud_move (new pcl::PCLPointCloud2 ());// Transformed(move) point cloud
-  pcl::PCLPointCloud2::Ptr cloud_icp (new pcl::PCLPointCloud2 ());// ICP output point cloud
+  // pcl::PCLPointCloud2::Ptr cloud_move (new pcl::PCLPointCloud2 ());// Transformed(move) point cloud
+  pcl::PointCloud<PointT>::Ptr cloud_move (new pcl::PointCloud<PointT>);// Transformed(move) point cloud
+  // pcl::PCLPointCloud2::Ptr cloud_icp (new pcl::PCLPointCloud2 ());// ICP output point cloud
 
   // Fill in the cloud data
   pcl::PCDReader reader;
@@ -73,7 +76,7 @@ int
   //   point.z = 1024 * rand() / (RAND_MAX + 1.0f);
   // }
   
-  std::cout << "Saved " << cloud_org->size () << " data points to input:" << std::endl;
+  // std::cout << "Saved " << cloud_org->size () << " data points to input:" << std::endl;
       
   // for (auto& point : *cloud_in)
   //   std::cout << point << std::endl;
@@ -119,18 +122,23 @@ int
   icp.setEuclideanFitnessEpsilon (rmse);
 
   // pcl::PointCloud<pcl::PointXYZ> Final;->for output
-  pcl::PointCloud<PointT> Final;
+    pcl::PointCloud<PointT>::Ptr Final (new pcl::PointCloud<PointT>);// 
+  // pcl::PointCloud<PointT> Final;
+  // pcl::PointCloud<pcl::PointXYZRGB> Final;
+  // pcl::PCLPointCloud2 Final;
   // Perform the alignment
   
 // Call the registration algorithm which estimates the transformation and returns the transformed source (input) as output.
 // Parameters
 //     [out]	output	the resultant input transformed point cloud dataset
 // Definition at line 155 of file registration.hpp.
-  icp.align(Final);
+  icp.align(*Final);
+  // icp.align(cloud_icp);
 
-  pcl::PCDWriter writer;
-  writer.write (argv[2], *Final, 
-         Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), false);
+  // pcl::PCDWriter writer;
+  // writer.write<PointT> (argv[2], *Final, 
+  pcl::io::savePCDFile (argv[2], *Final, true);
+        //  Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), false);
   // Obtain the transformation that aligned cloud_source to cloud_source_registered
   Eigen::Matrix4f transformation = icp.getFinalTransformation ();
 
