@@ -47,10 +47,10 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	if (argc != 5)
+	if (argc !=6)
     {
-        //radius::法線の計算半径　trans::移動量（現場メモ）
-        cout << "Error!\n **.exe input.pcd output.pcd radius[m] trans[m]\n";
+        //radius::法線の計算半径　trans::スキャン位置間距離・移動量（現場メモ）
+        cout << "Error!\n **.exe input.pcd output.pcd radius[m] trans[m] last_scan_file\n";
             return 0;
     }
 
@@ -63,6 +63,14 @@ int main(int argc, char** argv)
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
 	//load input file
 	if(pcl::io::loadPCDFile(argv[1], *cloud) == -1)
+	{
+		PCL_ERROR("Coudn't read PCD file\n");
+		return(-1);
+	}
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr l_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
+	//load last scan file
+	if(pcl::io::loadPCDFile(argv[5], *l_cloud) == -1)
 	{
 		PCL_ERROR("Coudn't read PCD file\n");
 		return(-1);
@@ -231,7 +239,7 @@ int main(int argc, char** argv)
 
   	pcl::transformPointCloud (*out_cloud, *transformed_cloud, transform_2);
 
-
+	//add icp
 
 
 
