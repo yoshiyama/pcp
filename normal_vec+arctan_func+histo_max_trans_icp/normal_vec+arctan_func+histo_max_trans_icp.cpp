@@ -199,7 +199,8 @@ int main(int argc, char** argv)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// void normal_angle(const double* nxy,int* angle,const int size);
-	p_size = out_cloud->points.size();
+	p_size = out_cloud->points.size();//out_cloud includes normals.
+
 	// normal_angle(&n_v[0],&ang,p_size);
 	normal_angle(&n_v,&ang,p_size);
 
@@ -216,7 +217,7 @@ int main(int argc, char** argv)
 	f_max(&h_freq,&id_v);
 	cout<<"最大要素数を持つ偏角は"<<id_v + h_low <<"度です"<<endl;
 	cout<<"ここでの偏角は，ｘ軸に対して"<<endl;
-
+	//setting translation
  	Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
 
 	//trans
@@ -238,13 +239,42 @@ int main(int argc, char** argv)
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
 
   	pcl::transformPointCloud (*out_cloud, *transformed_cloud, transform_2);
-
+	//so far, transformeed_cloud is final cloud.
+/////////////////////////////////////////////////////////////////////////////
 	//add icp
+	//
+	typedef pcl::PointXYZRGB PointT;
+	pcl::PointCloud<PointT>::Ptr cloud_org (new pcl::PointCloud<PointT>);
+	pcl::PointCloud<PointT>::Ptr cloud_move (new pcl::PointCloud<PointT>);
+	pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
+	icp.setInputSource(cloud_org);//original
+	icp.setInputTarget(cloud_move);//transformed
+	// Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
+	double max_dst=0.0;
+	max_dst=atof(argv[3]);
+	// icp.setMaxCorrespondenceDistance (0.05);
+	icp.setMaxCorrespondenceDistance (max_dst);
+	// Set the maximum number of iterations (criterion 1)
+	int itr=0;
+	itr = atoi(argv[4]);
+	icp.setMaximumIterations (itr);
+	// Set the transformation epsilon (criterion 2)
+	icp.setTransformationEpsilon (1e-8);//10の-8乗
+	// Set the euclidean distance difference epsilon (criterion 3)
+	double rmse=0.0;
+	rmse = atof(argv[5]);//default 0.0 OK ?
+	icp.setEuclideanFitnessEpsilon (rmse);
 
+	// pcl::PointCloud<pcl::PointXYZ> Final;->for output
+	pcl::PointCloud<PointT>::Ptr Final (new pcl::PointCloud<PointT>);// 
 
+	icp.align(*Final);
 
-  	pcl::PCDWriter writer;
-  	writer.write<pcl::PointXYZRGBNormal> (argv[2], *transformed_cloud, false);
+	pcl::io::savePCDFile (argv[2], *Final, true);
+/////////////////////////////////////////////////////////////////////////////
+//Final Output
+  	// pcl::PCDWriter writer;
+  	// writer.write<pcl::PointXYZRGBNormal> (argv[2], *transformed_cloud, false);
 
 
 // 	int m = out_cloud->points.size();

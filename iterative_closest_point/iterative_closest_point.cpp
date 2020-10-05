@@ -118,7 +118,7 @@ int
   icp.setTransformationEpsilon (1e-8);//10の-8乗
   // Set the euclidean distance difference epsilon (criterion 3)
   double rmse=0.0;
-  rmse = atof(argv[5]);
+  rmse = atof(argv[5]);//default 0.0 OK ?
   icp.setEuclideanFitnessEpsilon (rmse);
 
   // pcl::PointCloud<pcl::PointXYZ> Final;->for output
