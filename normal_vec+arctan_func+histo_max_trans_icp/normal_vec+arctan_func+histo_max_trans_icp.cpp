@@ -36,6 +36,9 @@ Output file:
 #include <pcl/conversions.h>
 #include <pcl/common/transforms.h>
 
+#include <pcl/registration/icp.h>
+#include <pcl/PCLPointCloud2.h>
+
 using namespace std;
 
 #include "f_max.hpp"
@@ -245,8 +248,8 @@ int main(int argc, char** argv)
 	//add icp
 	//
 	typedef pcl::PointXYZRGB PointT;
-	pcl::PointCloud<PointT>::Ptr cloud_org (new pcl::PointCloud<PointT>);
-	pcl::PointCloud<PointT>::Ptr cloud_move (new pcl::PointCloud<PointT>);
+	pcl::PointCloud<PointT>::Ptr cloud_org (new pcl::PointCloud<PointT>);//fixed
+	pcl::PointCloud<PointT>::Ptr cloud_move (new pcl::PointCloud<PointT>);//move
 	pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
 	icp.setInputSource(cloud_org);//original
 	icp.setInputTarget(cloud_move);//transformed
