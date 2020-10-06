@@ -47,10 +47,10 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	if (argc !=6)
+	if (argc !=9)
     {
         //radius::法線の計算半径　trans::スキャン位置間距離・移動量（現場メモ）
-        cout << "Error!\n **.exe input.pcd output.pcd radius[m] trans[m] last_scan_file\n";
+        cout << "Error!\n **.exe input.pcd output.pcd radius[m] trans[m] last_scan_filename max_dst iteration rmse\n";
             return 0;
     }
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 		PCL_ERROR("Coudn't read PCD file\n");
 		return(-1);
 	}
-
+	//This is last scan file
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr l_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
 	//load last scan file
 	if(pcl::io::loadPCDFile(argv[5], *l_cloud) == -1)
@@ -241,6 +241,7 @@ int main(int argc, char** argv)
   	pcl::transformPointCloud (*out_cloud, *transformed_cloud, transform_2);
 	//so far, transformeed_cloud is final cloud.
 /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 	//add icp
 	//
 	typedef pcl::PointXYZRGB PointT;
@@ -251,18 +252,18 @@ int main(int argc, char** argv)
 	icp.setInputTarget(cloud_move);//transformed
 	// Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
 	double max_dst=0.0;
-	max_dst=atof(argv[3]);
+	max_dst=atof(argv[6]);//change
 	// icp.setMaxCorrespondenceDistance (0.05);
 	icp.setMaxCorrespondenceDistance (max_dst);
 	// Set the maximum number of iterations (criterion 1)
 	int itr=0;
-	itr = atoi(argv[4]);
+	itr = atoi(argv[7]);
 	icp.setMaximumIterations (itr);
 	// Set the transformation epsilon (criterion 2)
 	icp.setTransformationEpsilon (1e-8);//10の-8乗
 	// Set the euclidean distance difference epsilon (criterion 3)
 	double rmse=0.0;
-	rmse = atof(argv[5]);//default 0.0 OK ?
+	rmse = atof(argv[8]);//default 0.0 OK ?
 	icp.setEuclideanFitnessEpsilon (rmse);
 
 	// pcl::PointCloud<pcl::PointXYZ> Final;->for output
