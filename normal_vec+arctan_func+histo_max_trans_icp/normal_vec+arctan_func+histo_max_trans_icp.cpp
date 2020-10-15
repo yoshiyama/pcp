@@ -18,6 +18,7 @@ Input file: PCD file -> X Y Z
 Output file:
 
 1.normal calculation
+
 ********************/
 
 
@@ -57,8 +58,8 @@ int main(int argc, char** argv)
             return 0;
     }
 
-	float rd;
-	rd=atof(argv[3]);
+	// a radius for calculating normal vectors
+	float rd=atof(argv[3]);
 
 	//smart pointer::変数の宣言，点群オブジェクトの宣言
 	//入力点群用のインスタンス
@@ -70,7 +71,7 @@ int main(int argc, char** argv)
 		PCL_ERROR("Coudn't read PCD file\n");
 		return(-1);
 	}
-	//This is last scan file
+	//This is last scan file::fixed point cloud on ICP
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr l_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
 	//load last scan file
 	if(pcl::io::loadPCDFile(argv[5], *l_cloud) == -1)
@@ -248,11 +249,55 @@ int main(int argc, char** argv)
 	//add icp
 	//
 	typedef pcl::PointXYZRGB PointT;
-	pcl::PointCloud<PointT>::Ptr cloud_org (new pcl::PointCloud<PointT>);//fixed
+	// pcl::PointCloud<PointT>::Ptr cloud_org (new pcl::PointCloud<PointT>);//fixed
 	pcl::PointCloud<PointT>::Ptr cloud_move (new pcl::PointCloud<PointT>);//move
+
+ 	cloud_move->width=transformed_cloud->width;
+    cloud_move->height=transformed_cloud->height;  
+    cloud_move->is_dense=transformed_cloud->is_dense;
+    cloud_move->points.resize (transformed_cloud->width * transformed_cloud->height);
+	
+	cout << "Output filename" << endl;
+	//ofstream ofs;
+	//ofs.open(argv[2]);
+
+	// int p_size;
+	p_size = transformed_cloud->points.size();
+	cout << "p_size=" << p_size <<endl;
+	// vector<double> n_v(p_size);//for storing normal vectors
+	// vector<int> ang(p_size); //
+	// vector<int> h_freq(p_size); //
+	p_size = cloud_move->points.size();
+
+	cout<<"done1\n";
+
+	for(size_t i=0; i < cloud_move->points.size() ; ++i)
+	// for(size_t i=0; i < cloud->points.size() ; ++i)
+	{
+		// cout<<"before_go["<<i<<"]"<<endl;
+        cloud_move->points[i].x = transformed_cloud->points[i].x;
+        cloud_move->points[i].y = transformed_cloud->points[i].y;
+        cloud_move->points[i].z = transformed_cloud->points[i].z;
+		// cout<<"before_go_1["<<i<<"]"<<endl;
+	//arrow->演算子
+    //色情報を強引に変更している部分
+        // r = cloud->points[i].r;
+        // g = cloud->points[i].g;
+        // b = cloud->points[i].b;
+        cloud_move->points[i].rgb=transformed_cloud->points[i].rgb;
+
+		cout<<"go["<<i<<"]"<<endl;
+	}
+
+
+
+
 	pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
-	icp.setInputSource(cloud_org);//original
-	icp.setInputTarget(cloud_move);//transformed
+	// icp.setInputSource(cloud_org);//original
+	icp.setInputSource(cloud_move);//original
+	// icp.setInputSource(l_cloud);//original
+	icp.setInputTarget(l_cloud);//transformed
+	// icp.setInputTarget(transformed_cloud);//transformed
 	// Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
 	double max_dst=0.0;
 	max_dst=atof(argv[6]);//change
