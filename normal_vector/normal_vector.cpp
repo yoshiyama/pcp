@@ -116,7 +116,8 @@ int main(int argc, char** argv)
 	std::vector<int> match_index;
 	pcl::removeNaNNormalsFromPointCloud(*out_cloud,*out_cloud,match_index);
 
-    pcl::io::savePCDFileASCII (argv[2], *out_cloud);
+    // pcl::io::savePCDFileASCII (argv[2], *out_cloud);
+	pcl::io::savePCDFileBinaryCompressed(argv[2], *out_cloud);
 
 	int m=out_cloud->points.size();
 	// int m=out_cloud->points.size();

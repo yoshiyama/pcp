@@ -14,7 +14,7 @@ atan returns radian
 
 go.exe input.pcd output.pcd radius[m]
 
-Input file: PCD file -> X Y Z
+Input file: PCD file -> X Y Z R G B
 Output file:
 
 1.normal calculation
