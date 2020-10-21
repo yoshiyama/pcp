@@ -22,6 +22,11 @@ Output file:
 2.偏角を計算する
 	2.1 最頻偏角値の算出（度数分布の作成）
 3.点群を移動する
+	3.1 並進移動行列の作成
+	3.2 回転移動行列の作成
+4.ICP
+	4.0 ICP計算用に(XYZRGBNormal->XYZRGBにする)
+	4.1 ICPの計算実施・保存
 
 ********************/
 
@@ -229,15 +234,17 @@ int main(int argc, char** argv)
 	f_max(&h_freq,&id_v);
 	cout<<"最大要素数を持つ偏角は"<<id_v + h_low <<"度です"<<endl;
 	cout<<"ここでの偏角は，ｘ軸に対して"<<endl;
+///////////////////////////////////////////////////////////////////////////////////////////
+//3.点群を移動する（前に算出した最頻偏角値とスキャン移動量で）
 	//setting translation
  	Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
-
+//3.1 並進移動行列の作成
 	//trans
 	int ty=0;
-	ty=atof(argv[4]);
+	ty=atof(argv[4]);//移動量
 
 	transform_2.translation() <<0.0, -ty, 0.0;
-
+//3.2　回転移動行列の作成
 	// The same rotation matrix as before; theta radians around Z axis
 	// transform_2.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
 	float theta = ((float)(id_v + h_low)/180)*M_PI;
@@ -249,11 +256,13 @@ int main(int argc, char** argv)
 	std::cout << transform_2.matrix() << std::endl;
 
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
-
+//3.3 点群の移動
   	pcl::transformPointCloud (*out_cloud, *transformed_cloud, transform_2);
 	//so far, transformeed_cloud is final cloud.
 /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
+//4 ICP
+//4.0 ICP計算用に(XYZRGBNormal->XYZRGBにする)
 	//add icp
 	//
 	typedef pcl::PointXYZRGB PointT;
@@ -297,9 +306,7 @@ int main(int argc, char** argv)
 		cout<<"go["<<i<<"]"<<endl;
 	}
 
-
-
-
+//4.1 ICPの計算実施・保存
 	pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
 	// icp.setInputSource(cloud_org);//original
 	icp.setInputSource(cloud_move);//original
