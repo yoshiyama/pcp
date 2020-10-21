@@ -17,7 +17,9 @@ go.exe input.pcd output.pcd radius[m]
 Input file: PCD file -> X Y Z R G B
 Output file:
 
+0.load file
 1.normal calculation
+2.偏角を計算する
 
 ********************/
 
@@ -60,7 +62,11 @@ int main(int argc, char** argv)
 
 	// a radius for calculating normal vectors
 	float rd=atof(argv[3]);
-
+	////////////////////////////////////////////////////////////////////////////////////
+	// 0.入力データの読み込み
+	//
+	//
+	//
 	//smart pointer::変数の宣言，点群オブジェクトの宣言
 	//入力点群用のインスタンス
 	//pcl::PointCloud<pcl::PointXYZRGB>::Ptr型
@@ -73,20 +79,20 @@ int main(int argc, char** argv)
 	}
 	//This is last scan file::fixed point cloud on ICP
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr l_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
-	//load last scan file
+	//load last scan file（１つ前のスキャン）
 	if(pcl::io::loadPCDFile(argv[5], *l_cloud) == -1)
 	{
 		PCL_ERROR("Coudn't read PCD file\n");
 		return(-1);
 	}
-	
-	//1st processing::normal vector
+	////////////////////////////////////////////////////////////////////////////////////
+	//1.1st processing::normal vector
 
 	// Create the normal estimation class, and pass the input dataset to it
 	// This is instancing, too.
 	pcl::NormalEstimation<pcl::PointXYZRGB, pcl::Normal> ne;
 
-	ne.setInputCloud (cloud);//This is smart pointer.
+	ne.setInputCloud(cloud);//This is smart pointer.
 	//const修飾子はすぐ右のshared_ptr<>クラスにかかることになり、shared_ptrの指す先は変更できなくなりますが内容は変更可能なままです。
 	//https://cdecrement.blog.fc2.com/blog-entry-58.html
 	
@@ -118,7 +124,7 @@ int main(int argc, char** argv)
     out_cloud->is_dense=cloud->is_dense;
     out_cloud->points.resize (cloud->width * cloud->height);
 	
-	cout << "Output filename" << endl;
+	// cout << "Output filename" << endl;
 	//ofstream ofs;
 	//ofs.open(argv[2]);
 
@@ -157,7 +163,7 @@ int main(int argc, char** argv)
         out_cloud->points[i].curvature = normals->points[i].curvature;
 		cout<<"go["<<i<<"]"<<endl;
 	}
-
+	//法線データがないやつを消します
 	std::vector<int> match_index;
 	pcl::removeNaNNormalsFromPointCloud(*out_cloud,*out_cloud,match_index);
 
