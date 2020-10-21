@@ -20,6 +20,8 @@ Output file:
 0.load file
 1.normal calculation
 2.偏角を計算する
+	2.1 最頻偏角値の算出（度数分布の作成）
+3.点群を移動する
 
 ********************/
 
@@ -60,9 +62,7 @@ int main(int argc, char** argv)
             return 0;
     }
 
-	// a radius for calculating normal vectors
-	float rd=atof(argv[3]);
-	////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 	// 0.入力データの読み込み
 	//
 	//
@@ -85,9 +85,8 @@ int main(int argc, char** argv)
 		PCL_ERROR("Coudn't read PCD file\n");
 		return(-1);
 	}
-	////////////////////////////////////////////////////////////////////////////////////
-	//1.1st processing::normal vector
-
+////////////////////////////////////////////////////////////////////////////////////
+//1.1st processing::normal vector
 	// Create the normal estimation class, and pass the input dataset to it
 	// This is instancing, too.
 	pcl::NormalEstimation<pcl::PointXYZRGB, pcl::Normal> ne;
@@ -105,6 +104,8 @@ int main(int argc, char** argv)
 	// pcl::search::KdTree <pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree <pcl::PointXYZRGB> ());
 	// ne.setSearchMethod (tree);
 	//ne.setRadiusSearch (0.03);
+	// a radius for calculating normal vectors
+	float rd=atof(argv[3]);
 	ne.setRadiusSearch (rd);
 	
 	//https://raymond-chen6.gitbooks.io/pcl/content/normal_estimation.html
@@ -169,7 +170,8 @@ int main(int argc, char** argv)
 
     // pcl::io::savePCDFileASCII (argv[2], *out_cloud);
 	// cout<<"done\n";
-	
+/////////////////////////////////////////////////////////////////////////
+//2.偏角を計算します	
 	vector<double> n_v(2*(out_cloud->points.size()));//for storing normal vectors
 	vector<int> ang(out_cloud->points.size()); //
 	vector<int> h_freq(out_cloud->points.size()); //
@@ -212,8 +214,8 @@ int main(int argc, char** argv)
 	p_size = out_cloud->points.size();//out_cloud includes normals.
 
 	// normal_angle(&n_v[0],&ang,p_size);
-	normal_angle(&n_v,&ang,p_size);
-
+	normal_angle(&n_v,&ang,p_size);//偏角の算出
+//////////////////////////////////////////////
 	int h_cls = 182;
 	int h_hb = 1;
 	int h_low = -90;
