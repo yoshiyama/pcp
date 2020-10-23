@@ -44,7 +44,7 @@ Output file:
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/filter.h>
 #include <pcl/conversions.h>
-#include <pcl/common/transforms.h>
+#include <pcl/common/transforms.h>//This includes Eigen
 
 #include <pcl/registration/icp.h>
 #include <pcl/PCLPointCloud2.h>
