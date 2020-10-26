@@ -334,6 +334,11 @@ int main(int argc, char** argv)
 
 	icp.align(*Final);
 
+	std::cout << "has converged:" << icp.hasConverged() << " score: " <<
+ 	icp.getFitnessScore() << std::endl;
+  	std::cout << icp.getFinalTransformation() << std::endl;
+
+
 	pcl::io::savePCDFile (argv[2], *Final, true);
 /////////////////////////////////////////////////////////////////////////////
 //Final Output
