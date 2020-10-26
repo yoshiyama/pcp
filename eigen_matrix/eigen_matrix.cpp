@@ -8,21 +8,23 @@ using namespace std;
 
 // string getFileName();
 
-int main(int argc, char** argv)
+void eigen_matrix(const char *str_inp,int trans, float rot)
+// int main(int argc, char** argv)
 {
-    if (argc !=5)
-    {
-        //trans::スキャン位置間距離・移動量（現場メモ）
-        cout << "Error!\n **.exe input.pcd output.pcd trans[m] rotate[deg]\n";
-            return 0;
-    }
+    // if (argc !=5)
+    // {
+    //     //trans::スキャン位置間距離・移動量（現場メモ）
+    //     cout << "Error!\n **.exe input.pcd output.pcd trans[m] rotate[deg]\n";
+    //         return 0;
+    // }
 
     	//smart pointer::変数の宣言，点群オブジェクトの宣言
 	//入力点群用のインスタンス
 	//pcl::PointCloud<pcl::PointXYZRGB>::Ptr型
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//<pcl::PointXYZRGB>型
 	//load input file
-	if(pcl::io::loadPCDFile(argv[1], *cloud) == -1)
+	if(pcl::io::loadPCDFile(*str_inp, *cloud) == -1)
+	// if(pcl::io::loadPCDFile(argv[1], *cloud) == -1)
 	{
 		PCL_ERROR("Coudn't read PCD file\n");
 		return(-1);
@@ -36,7 +38,8 @@ int main(int argc, char** argv)
 //3.1 並進移動行列の作成
 	//trans
 	int ty=0;
-	ty=atof(argv[3]);//移動量
+	// ty=atof(argv[3]);//移動量
+	ty=atof(trans);//移動量
 
 	transform_2.translation() <<0.0, -ty, 0.0;
 //3.2　回転移動行列の作成
@@ -45,7 +48,8 @@ int main(int argc, char** argv)
 	// float theta = ((float)(id_v + h_low)/180)*M_PI;
 	float theta = 0;
     float theta_deg=0;
-    theta_deg = atof(argv[4]);
+    // theta_deg = atof(argv[4]);
+    theta_deg = atof(rot);
 	// float theta = ((float)(theta_deg)/180)*M_PI;
 	theta = (((float)theta_deg)/180)*M_PI;
 	transform_2.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
