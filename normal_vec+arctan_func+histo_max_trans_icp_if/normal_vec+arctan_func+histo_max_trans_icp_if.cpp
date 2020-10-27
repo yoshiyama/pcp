@@ -241,7 +241,8 @@ int main(int argc, char** argv)
 	Eigen::Affine3f transform_2_gyaku = Eigen::Affine3f::Identity();
 //3.1 並進移動行列の作成
 	//trans
-	int ty=0;
+	// int ty=0;
+	float ty=0;
 	ty=atof(argv[4]);//移動量
 
 	transform_2.translation() <<0.0, -ty, 0.0;
@@ -263,7 +264,7 @@ int main(int argc, char** argv)
 
 
 
-//3.3 点群の移動	
+//3.3 点群の移動	(ここでも２つつくる)：：初期位置用点群
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr transformed_cloud_gyaku (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
   	pcl::transformPointCloud (*out_cloud, *transformed_cloud, transform_2);
@@ -272,84 +273,102 @@ int main(int argc, char** argv)
 ///////////////////////////////////////////////////////////////////////////// 10/26, 2020ここまで
 ////////////////////////////////////////////////////////////////////////////
 //4 ICP
-//4.0 ICP計算用に(XYZRGBNormal->XYZRGBにする)
+//4.0 ICP計算用に(XYZRGBNormal->XYZRGBにする)cloud_moveに移す
 	//add icp
 	//
 	typedef pcl::PointXYZRGB PointT;
-	// pcl::PointCloud<PointT>::Ptr cloud_org (new pcl::PointCloud<PointT>);//fixed
 	pcl::PointCloud<PointT>::Ptr cloud_move (new pcl::PointCloud<PointT>);//move
+	pcl::PointCloud<PointT>::Ptr cloud_move_gyaku(new pcl::PointCloud<PointT>);//move
 
  	cloud_move->width=transformed_cloud->width;
     cloud_move->height=transformed_cloud->height;  
     cloud_move->is_dense=transformed_cloud->is_dense;
     cloud_move->points.resize (transformed_cloud->width * transformed_cloud->height);
-	
-	cout << "Output filename" << endl;
-	//ofstream ofs;
-	//ofs.open(argv[2]);
+ 	cloud_move->width=transformed_cloud->width;
+    cloud_move->height=transformed_cloud->height;  
+    cloud_move->is_dense=transformed_cloud->is_dense;
+    cloud_move->points.resize (transformed_cloud->width * transformed_cloud->height);
 
-	// int p_size;
+	cloud_move_gyaku->width=transformed_cloud_gyaku->width;
+    cloud_move_gyaku->height=transformed_cloud_gyaku->height;  
+    cloud_move_gyaku->is_dense=transformed_cloud_gyaku->is_dense;
+    cloud_move_gyaku->points.resize (transformed_cloud_gyaku->width * transformed_cloud_gyaku->height);
+ 	cloud_move_gyaku->width=transformed_cloud_gyaku->width;
+    cloud_move_gyaku->height=transformed_cloud_gyaku->height;  
+    cloud_move_gyaku->is_dense=transformed_cloud_gyaku->is_dense;
+    cloud_move_gyaku->points.resize (transformed_cloud_gyaku->width * transformed_cloud_gyaku->height);
+
+	
 	p_size = transformed_cloud->points.size();
 	cout << "p_size=" << p_size <<endl;
-	// vector<double> n_v(p_size);//for storing normal vectors
-	// vector<int> ang(p_size); //
-	// vector<int> h_freq(p_size); //
 	p_size = cloud_move->points.size();
-
-	cout<<"done1\n";
-
+//ここも２つか
 	for(size_t i=0; i < cloud_move->points.size() ; ++i)
-	// for(size_t i=0; i < cloud->points.size() ; ++i)
 	{
-		// cout<<"before_go["<<i<<"]"<<endl;
         cloud_move->points[i].x = transformed_cloud->points[i].x;
         cloud_move->points[i].y = transformed_cloud->points[i].y;
         cloud_move->points[i].z = transformed_cloud->points[i].z;
-		// cout<<"before_go_1["<<i<<"]"<<endl;
-	//arrow->演算子
-    //色情報を強引に変更している部分
-        // r = cloud->points[i].r;
-        // g = cloud->points[i].g;
-        // b = cloud->points[i].b;
         cloud_move->points[i].rgb=transformed_cloud->points[i].rgb;
-
 		cout<<"go["<<i<<"]"<<endl;
 	}
+	for(size_t i=0; i < cloud_move_gyaku->points.size() ; ++i)
+	{
+        cloud_move_gyaku->points[i].x = transformed_cloud_gyaku->points[i].x;
+        cloud_move_gyaku->points[i].y = transformed_cloud_gyaku->points[i].y;
+        cloud_move_gyaku->points[i].z = transformed_cloud_gyaku->points[i].z;
+        cloud_move_gyaku->points[i].rgb=transformed_cloud_gyaku->points[i].rgb;
+		cout<<"go_gyaku["<<i<<"]"<<endl;
+	}
 
-//4.1 ICPの計算実施・保存
+//4.1 ICPの計算実施・保存(ここも２つ)
 	pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
+	pcl::IterativeClosestPoint<PointT, PointT> icp_gyaku;//icpの実体
 	// icp.setInputSource(cloud_org);//original
-	icp.setInputSource(cloud_move);//original
+	icp.setInputSource(l_cloud);//original
+	icp_gyaku.setInputSource(l_cloud);//original
 	// icp.setInputSource(l_cloud);//original
-	icp.setInputTarget(l_cloud);//transformed
+	icp.setInputTarget(cloud_move);//transformed
+	icp_gyaku.setInputTarget(cloud_move_gyaku);//transformed
+
 	// icp.setInputTarget(transformed_cloud);//transformed
 	// Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
 	double max_dst=0.0;
 	max_dst=atof(argv[6]);//change
 	// icp.setMaxCorrespondenceDistance (0.05);
 	icp.setMaxCorrespondenceDistance (max_dst);
+	icp_gyaku.setMaxCorrespondenceDistance (max_dst);
 	// Set the maximum number of iterations (criterion 1)
 	int itr=0;
 	itr = atoi(argv[7]);
 	icp.setMaximumIterations (itr);
+	icp_gyaku.setMaximumIterations (itr);
 	// Set the transformation epsilon (criterion 2)
 	icp.setTransformationEpsilon (1e-8);//10の-8乗
+	icp_gyaku.setTransformationEpsilon (1e-8);//10の-8乗
 	// Set the euclidean distance difference epsilon (criterion 3)
 	double rmse=0.0;
 	rmse = atof(argv[8]);//default 0.0 OK ?
 	icp.setEuclideanFitnessEpsilon (rmse);
+	icp_gyaku.setEuclideanFitnessEpsilon (rmse);
 
 	// pcl::PointCloud<pcl::PointXYZ> Final;->for output
 	pcl::PointCloud<PointT>::Ptr Final (new pcl::PointCloud<PointT>);// 
+	pcl::PointCloud<PointT>::Ptr Final_gyaku (new pcl::PointCloud<PointT>);// 
 
 	icp.align(*Final);
+	icp_gyaku.align(*Final_gyaku);
 
 	std::cout << "has converged:" << icp.hasConverged() << " score: " <<
  	icp.getFitnessScore() << std::endl;
   	std::cout << icp.getFinalTransformation() << std::endl;
 
+	std::cout << "gyaku_has converged:" << icp_gyaku.hasConverged() << "gyaku_ score: " <<
+ 	icp_gyaku.getFitnessScore() << std::endl;
+  	std::cout << icp_gyaku.getFinalTransformation() << std::endl;
+
 
 	pcl::io::savePCDFile (argv[2], *Final, true);
+	pcl::io::savePCDFile ("gyaku.pcd", *Final_gyaku, true);
 /////////////////////////////////////////////////////////////////////////////
 //Final Output
   	// pcl::PCDWriter writer;
