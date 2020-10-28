@@ -28,6 +28,8 @@ Output file:
 	4.0 ICP計算用に(XYZRGBNormal->XYZRGBにする)
 	4.1 ICPの計算実施・保存
 
+
+./normal_vec+arctan_func+histo_max_trans_icp ../S268_vg.pcd ../S268_vg_icp.pcd 0.1 10 ../S269_vg.pcd 20 20 0.0
 ********************/
 
 
@@ -55,6 +57,9 @@ using namespace std;
 #include "normal_angle.hpp"
 #include "histo.hpp"
 
+#ifdef _OEPNMP
+#include <omp.h>
+#endif
 
 // string getFileName();
 
@@ -144,30 +149,34 @@ int main(int argc, char** argv)
 
 	cout<<"done1\n";
 
-	for(size_t i=0; i < out_cloud->points.size() ; ++i)
-	// for(size_t i=0; i < cloud->points.size() ; ++i)
-	{
-		// cout<<"before_go["<<i<<"]"<<endl;
-        out_cloud->points[i].x = cloud->points[i].x;
-        out_cloud->points[i].y = cloud->points[i].y;
-        out_cloud->points[i].z = cloud->points[i].z;
-		// cout<<"before_go_1["<<i<<"]"<<endl;
-	//arrow->演算子
-    //色情報を強引に変更している部分
-        // r = cloud->points[i].r;
-        // g = cloud->points[i].g;
-        // b = cloud->points[i].b;
-        out_cloud->points[i].rgb=cloud->points[i].rgb;
-        // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
-        out_cloud->points[i].normal_x = normals->points[i].normal_x;
-        out_cloud->points[i].normal_y = normals->points[i].normal_y;
-		// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
-		// n_v[2*i] = normals->points[i].normal_x;
-		// n_v[2*i+1] = normals->points[i].normal_y;
-		// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
-        out_cloud->points[i].normal_z = normals->points[i].normal_z;
-        out_cloud->points[i].curvature = normals->points[i].curvature;
-		cout<<"go["<<i<<"]"<<endl;
+    #pragma omp parallel
+    {
+		#pragma omp for
+		for(size_t i=0; i < out_cloud->points.size() ; ++i)
+		// for(size_t i=0; i < cloud->points.size() ; ++i)
+		{
+			// cout<<"before_go["<<i<<"]"<<endl;
+			out_cloud->points[i].x = cloud->points[i].x;
+			out_cloud->points[i].y = cloud->points[i].y;
+			out_cloud->points[i].z = cloud->points[i].z;
+			// cout<<"before_go_1["<<i<<"]"<<endl;
+		//arrow->演算子
+		//色情報を強引に変更している部分
+			// r = cloud->points[i].r;
+			// g = cloud->points[i].g;
+			// b = cloud->points[i].b;
+			out_cloud->points[i].rgb=cloud->points[i].rgb;
+			// flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
+			out_cloud->points[i].normal_x = normals->points[i].normal_x;
+			out_cloud->points[i].normal_y = normals->points[i].normal_y;
+			// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
+			// n_v[2*i] = normals->points[i].normal_x;
+			// n_v[2*i+1] = normals->points[i].normal_y;
+			// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
+			out_cloud->points[i].normal_z = normals->points[i].normal_z;
+			out_cloud->points[i].curvature = normals->points[i].curvature;
+			cout<<"go["<<i<<"]"<<endl;
+		}
 	}
 	//法線データがないやつを消します
 	std::vector<int> match_index;
@@ -181,30 +190,34 @@ int main(int argc, char** argv)
 	vector<int> ang(out_cloud->points.size()); //
 	vector<int> h_freq(out_cloud->points.size()); //
 
-	for(size_t i=0; i < out_cloud->points.size() ; ++i)
-	// for(size_t i=0; i < cloud->points.size() ; ++i)
-	{
-		// cout<<"before_go["<<i<<"]"<<endl;
-        // out_cloud->points[i].x = cloud->points[i].x;
-        // out_cloud->points[i].y = cloud->points[i].y;
-        // out_cloud->points[i].z = cloud->points[i].z;
-		// cout<<"before_go_1["<<i<<"]"<<endl;
-	//arrow->演算子
-    //色情報を強引に変更している部分
-        // r = cloud->points[i].r;
-        // g = cloud->points[i].g;
-        // b = cloud->points[i].b;
-        // out_cloud->points[i].rgb=cloud->points[i].rgb;
-        // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
-        // out_cloud->points[i].normal_x = normals->points[i].normal_x;
-        // out_cloud->points[i].normal_y = normals->points[i].normal_y;
-		// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
-		n_v[2*i] = out_cloud->points[i].normal_x;
-		n_v[2*i+1] = out_cloud->points[i].normal_y;
-		// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
-        // out_cloud->points[i].normal_z = normals->points[i].normal_z;
-        // out_cloud->points[i].curvature = normals->points[i].curvature;
-		// cout<<"go["<<i<<"]"<<endl;
+    #pragma omp parallel
+    {
+		#pragma omp for
+		for(size_t i=0; i < out_cloud->points.size() ; ++i)
+		// for(size_t i=0; i < cloud->points.size() ; ++i)
+		{
+			// cout<<"before_go["<<i<<"]"<<endl;
+			// out_cloud->points[i].x = cloud->points[i].x;
+			// out_cloud->points[i].y = cloud->points[i].y;
+			// out_cloud->points[i].z = cloud->points[i].z;
+			// cout<<"before_go_1["<<i<<"]"<<endl;
+		//arrow->演算子
+		//色情報を強引に変更している部分
+			// r = cloud->points[i].r;
+			// g = cloud->points[i].g;
+			// b = cloud->points[i].b;
+			// out_cloud->points[i].rgb=cloud->points[i].rgb;
+			// flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
+			// out_cloud->points[i].normal_x = normals->points[i].normal_x;
+			// out_cloud->points[i].normal_y = normals->points[i].normal_y;
+			// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
+			n_v[2*i] = out_cloud->points[i].normal_x;
+			n_v[2*i+1] = out_cloud->points[i].normal_y;
+			// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
+			// out_cloud->points[i].normal_z = normals->points[i].normal_z;
+			// out_cloud->points[i].curvature = normals->points[i].curvature;
+			// cout<<"go["<<i<<"]"<<endl;
+		}
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////
@@ -288,22 +301,26 @@ int main(int argc, char** argv)
 
 	cout<<"done1\n";
 
-	for(size_t i=0; i < cloud_move->points.size() ; ++i)
-	// for(size_t i=0; i < cloud->points.size() ; ++i)
-	{
-		// cout<<"before_go["<<i<<"]"<<endl;
-        cloud_move->points[i].x = transformed_cloud->points[i].x;
-        cloud_move->points[i].y = transformed_cloud->points[i].y;
-        cloud_move->points[i].z = transformed_cloud->points[i].z;
-		// cout<<"before_go_1["<<i<<"]"<<endl;
-	//arrow->演算子
-    //色情報を強引に変更している部分
-        // r = cloud->points[i].r;
-        // g = cloud->points[i].g;
-        // b = cloud->points[i].b;
-        cloud_move->points[i].rgb=transformed_cloud->points[i].rgb;
+    #pragma omp parallel
+    {
+		#pragma omp for
+		for(size_t i=0; i < cloud_move->points.size() ; ++i)
+		// for(size_t i=0; i < cloud->points.size() ; ++i)
+		{
+			// cout<<"before_go["<<i<<"]"<<endl;
+			cloud_move->points[i].x = transformed_cloud->points[i].x;
+			cloud_move->points[i].y = transformed_cloud->points[i].y;
+			cloud_move->points[i].z = transformed_cloud->points[i].z;
+			// cout<<"before_go_1["<<i<<"]"<<endl;
+		//arrow->演算子
+		//色情報を強引に変更している部分
+			// r = cloud->points[i].r;
+			// g = cloud->points[i].g;
+			// b = cloud->points[i].b;
+			cloud_move->points[i].rgb=transformed_cloud->points[i].rgb;
 
-		cout<<"go["<<i<<"]"<<endl;
+			cout<<"go["<<i<<"]"<<endl;
+		}
 	}
 
 //4.1 ICPの計算実施・保存
