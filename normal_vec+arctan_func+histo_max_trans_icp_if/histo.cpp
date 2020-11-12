@@ -7,6 +7,9 @@
 #include <cstddef>
 #include <iostream>
 #include <vector>
+#ifdef _OEPNMP
+#include <omp.h>
+#endif
 
 using namespace std;
 

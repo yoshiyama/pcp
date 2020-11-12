@@ -42,8 +42,8 @@ void normal_angle(const vector<double>* v_nxy, vector<int>* v_angle, const int s
 			// v[i][1]=nxy[i][1];
 			// v[i][0]=nxy[2*i];
 			// v[i][1]=nxy[2*i+1];
-            cout << "normal_x[" << i <<"]=" <<v_nxy->at(2*i)<<", ";
-            cout << "normal_y[" << i <<"]="<<v_nxy->at(2*i+1)<<endl;
+        //cout << "normal_x[" << i <<"]=" <<v_nxy->at(2*i)<<", ";
+        //cout << "normal_y[" << i <<"]="<<v_nxy->at(2*i+1)<<endl;
 			// v.push_back(nxy[2*i]);
 			// v.push_back(nxy[2*i+1]);
 			// cout << "x[" << i << "][" << 0 << "] = " << v[2*i] << ",";

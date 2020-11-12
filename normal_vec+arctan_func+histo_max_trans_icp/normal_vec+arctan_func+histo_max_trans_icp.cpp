@@ -151,6 +151,7 @@ int main(int argc, char** argv)
 
     #pragma omp parallel
     {
+		cout<<"go"<<endl;
 		#pragma omp for
 		for(size_t i=0; i < out_cloud->points.size() ; ++i)
 		// for(size_t i=0; i < cloud->points.size() ; ++i)
@@ -175,7 +176,7 @@ int main(int argc, char** argv)
 			// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
 			out_cloud->points[i].normal_z = normals->points[i].normal_z;
 			out_cloud->points[i].curvature = normals->points[i].curvature;
-			cout<<"go["<<i<<"]"<<endl;
+			// cout<<"go["<<i<<"]"<<endl;
 		}
 	}
 	//法線データがないやつを消します
@@ -303,6 +304,7 @@ int main(int argc, char** argv)
 
     #pragma omp parallel
     {
+		// cout<<"go"<<endl;
 		#pragma omp for
 		for(size_t i=0; i < cloud_move->points.size() ; ++i)
 		// for(size_t i=0; i < cloud->points.size() ; ++i)
@@ -318,8 +320,7 @@ int main(int argc, char** argv)
 			// g = cloud->points[i].g;
 			// b = cloud->points[i].b;
 			cloud_move->points[i].rgb=transformed_cloud->points[i].rgb;
-
-			cout<<"go["<<i<<"]"<<endl;
+			// cout<<"go["<<i<<"]"<<endl;
 		}
 	}
 
@@ -354,7 +355,6 @@ int main(int argc, char** argv)
 	std::cout << "has converged:" << icp.hasConverged() << " score: " <<
  	icp.getFitnessScore() << std::endl;
   	std::cout << icp.getFinalTransformation() << std::endl;
-
 
 	pcl::io::savePCDFile (argv[2], *Final, true);
 /////////////////////////////////////////////////////////////////////////////

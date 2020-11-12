@@ -14,6 +14,8 @@ atan returns radian
 
 go.exe input.pcd output.pcd radius[m]
 
+./normal_vec+arctan_func+histo_max_trans_icp_if ../S268_vg.pcd ../S268_vg_icp.pcd 0.1 10 ../S269_vg.pcd 20 20 0.0
+
 Input file: PCD file -> X Y Z R G B
 Output file:
 
@@ -54,6 +56,10 @@ using namespace std;
 #include "f_max.hpp"
 #include "normal_angle.hpp"
 #include "histo.hpp"
+
+#ifdef _OEPNMP
+#include <omp.h>
+#endif
 
 
 // string getFileName();
@@ -143,31 +149,35 @@ int main(int argc, char** argv)
 	p_size = out_cloud->points.size();
 
 	cout<<"done1\n";
-
-	for(size_t i=0; i < out_cloud->points.size() ; ++i)
-	// for(size_t i=0; i < cloud->points.size() ; ++i)
-	{
-		// cout<<"before_go["<<i<<"]"<<endl;
-        out_cloud->points[i].x = cloud->points[i].x;
-        out_cloud->points[i].y = cloud->points[i].y;
-        out_cloud->points[i].z = cloud->points[i].z;
-		// cout<<"before_go_1["<<i<<"]"<<endl;
-	//arrow->演算子
-    //色情報を強引に変更している部分
-        // r = cloud->points[i].r;
-        // g = cloud->points[i].g;
-        // b = cloud->points[i].b;
-        out_cloud->points[i].rgb=cloud->points[i].rgb;
-        // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
-        out_cloud->points[i].normal_x = normals->points[i].normal_x;
-        out_cloud->points[i].normal_y = normals->points[i].normal_y;
-		// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
-		// n_v[2*i] = normals->points[i].normal_x;
-		// n_v[2*i+1] = normals->points[i].normal_y;
-		// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
-        out_cloud->points[i].normal_z = normals->points[i].normal_z;
-        out_cloud->points[i].curvature = normals->points[i].curvature;
-		cout<<"go["<<i<<"]"<<endl;
+	cout<<"start copying"<<endl;
+    #pragma omp parallel
+    {
+		#pragma omp for
+		for(size_t i=0; i < out_cloud->points.size() ; ++i)
+		// for(size_t i=0; i < cloud->points.size() ; ++i)
+		{
+			// cout<<"before_go["<<i<<"]"<<endl;
+			out_cloud->points[i].x = cloud->points[i].x;
+			out_cloud->points[i].y = cloud->points[i].y;
+			out_cloud->points[i].z = cloud->points[i].z;
+			// cout<<"before_go_1["<<i<<"]"<<endl;
+		//arrow->演算子
+		//色情報を強引に変更している部分
+			// r = cloud->points[i].r;
+			// g = cloud->points[i].g;
+			// b = cloud->points[i].b;
+			out_cloud->points[i].rgb=cloud->points[i].rgb;
+			// flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
+			out_cloud->points[i].normal_x = normals->points[i].normal_x;
+			out_cloud->points[i].normal_y = normals->points[i].normal_y;
+			// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
+			// n_v[2*i] = normals->points[i].normal_x;
+			// n_v[2*i+1] = normals->points[i].normal_y;
+			// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
+			out_cloud->points[i].normal_z = normals->points[i].normal_z;
+			out_cloud->points[i].curvature = normals->points[i].curvature;
+			// cout<<"go["<<i<<"]"<<endl;
+		}
 	}
 	//法線データがないやつを消します
 	std::vector<int> match_index;
@@ -180,31 +190,34 @@ int main(int argc, char** argv)
 	vector<double> n_v(2*(out_cloud->points.size()));//for storing normal vectors
 	vector<int> ang(out_cloud->points.size()); //
 	vector<int> h_freq(out_cloud->points.size()); //
-
-	for(size_t i=0; i < out_cloud->points.size() ; ++i)
-	// for(size_t i=0; i < cloud->points.size() ; ++i)
-	{
-		// cout<<"before_go["<<i<<"]"<<endl;
-        // out_cloud->points[i].x = cloud->points[i].x;
-        // out_cloud->points[i].y = cloud->points[i].y;
-        // out_cloud->points[i].z = cloud->points[i].z;
-		// cout<<"before_go_1["<<i<<"]"<<endl;
-	//arrow->演算子
-    //色情報を強引に変更している部分
-        // r = cloud->points[i].r;
-        // g = cloud->points[i].g;
-        // b = cloud->points[i].b;
-        // out_cloud->points[i].rgb=cloud->points[i].rgb;
-        // flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
-        // out_cloud->points[i].normal_x = normals->points[i].normal_x;
-        // out_cloud->points[i].normal_y = normals->points[i].normal_y;
-		// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
-		n_v[2*i] = out_cloud->points[i].normal_x;
-		n_v[2*i+1] = out_cloud->points[i].normal_y;
-		// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
-        // out_cloud->points[i].normal_z = normals->points[i].normal_z;
-        // out_cloud->points[i].curvature = normals->points[i].curvature;
-		// cout<<"go["<<i<<"]"<<endl;
+    #pragma omp parallel
+    {
+		#pragma omp for
+		for(size_t i=0; i < out_cloud->points.size() ; ++i)
+		// for(size_t i=0; i < cloud->points.size() ; ++i)
+		{
+			// cout<<"before_go["<<i<<"]"<<endl;
+			// out_cloud->points[i].x = cloud->points[i].x;
+			// out_cloud->points[i].y = cloud->points[i].y;
+			// out_cloud->points[i].z = cloud->points[i].z;
+			// cout<<"before_go_1["<<i<<"]"<<endl;
+		//arrow->演算子
+		//色情報を強引に変更している部分
+			// r = cloud->points[i].r;
+			// g = cloud->points[i].g;
+			// b = cloud->points[i].b;
+			// out_cloud->points[i].rgb=cloud->points[i].rgb;
+			// flipNormalTowardsViewpoint(out_cloud->points[i], 0.0, 0.0, 0.0, normals->points[i].normal_x, normals->points[i].normal_y, normals->points[i].normal_z);
+			// out_cloud->points[i].normal_x = normals->points[i].normal_x;
+			// out_cloud->points[i].normal_y = normals->points[i].normal_y;
+			// cout<<"before_go_n_v_1["<<i<<"]"<<endl;
+			n_v[2*i] = out_cloud->points[i].normal_x;
+			n_v[2*i+1] = out_cloud->points[i].normal_y;
+			// cout<<"after_go_n_v_1["<<i<<"]"<<endl;
+			// out_cloud->points[i].normal_z = normals->points[i].normal_z;
+			// out_cloud->points[i].curvature = normals->points[i].curvature;
+			// cout<<"go["<<i<<"]"<<endl;
+		}
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////
@@ -238,7 +251,7 @@ int main(int argc, char** argv)
 //3.点群を移動する（前に算出した最頻偏角値とスキャン移動量で）Eigenを活用
 	//setting translation（２パターンつくる）
  	Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
-	Eigen::Affine3f transform_2_gyaku = Eigen::Affine3f::Identity();
+	Eigen::Affine3f transform_2_gyaku = Eigen::Affine3f::Identity();//180°回転させる
 //3.1 並進移動行列の作成
 	//trans
 	// int ty=0;
@@ -302,25 +315,35 @@ int main(int argc, char** argv)
 	p_size = transformed_cloud->points.size();
 	cout << "p_size=" << p_size <<endl;
 	p_size = cloud_move->points.size();
+	cout << "start copying" <<endl;
 //ここも２つか
-	for(size_t i=0; i < cloud_move->points.size() ; ++i)
-	{
-        cloud_move->points[i].x = transformed_cloud->points[i].x;
-        cloud_move->points[i].y = transformed_cloud->points[i].y;
-        cloud_move->points[i].z = transformed_cloud->points[i].z;
-        cloud_move->points[i].rgb=transformed_cloud->points[i].rgb;
-		cout<<"go["<<i<<"]"<<endl;
+    #pragma omp parallel
+    {
+		#pragma omp for
+		for(size_t i=0; i < cloud_move->points.size() ; ++i)
+		{
+			cloud_move->points[i].x = transformed_cloud->points[i].x;
+			cloud_move->points[i].y = transformed_cloud->points[i].y;
+			cloud_move->points[i].z = transformed_cloud->points[i].z;
+			cloud_move->points[i].rgb=transformed_cloud->points[i].rgb;
+			// cout<<"go["<<i<<"]"<<endl;
+		}
 	}
-	for(size_t i=0; i < cloud_move_gyaku->points.size() ; ++i)
-	{
-        cloud_move_gyaku->points[i].x = transformed_cloud_gyaku->points[i].x;
-        cloud_move_gyaku->points[i].y = transformed_cloud_gyaku->points[i].y;
-        cloud_move_gyaku->points[i].z = transformed_cloud_gyaku->points[i].z;
-        cloud_move_gyaku->points[i].rgb=transformed_cloud_gyaku->points[i].rgb;
-		cout<<"go_gyaku["<<i<<"]"<<endl;
+//ここも２つか
+    #pragma omp parallel
+    {
+		#pragma omp for	
+		for(size_t i=0; i < cloud_move_gyaku->points.size() ; ++i)
+		{
+			cloud_move_gyaku->points[i].x = transformed_cloud_gyaku->points[i].x;
+			cloud_move_gyaku->points[i].y = transformed_cloud_gyaku->points[i].y;
+			cloud_move_gyaku->points[i].z = transformed_cloud_gyaku->points[i].z;
+			cloud_move_gyaku->points[i].rgb=transformed_cloud_gyaku->points[i].rgb;
+			// cout<<"go_gyaku["<<i<<"]"<<endl;
+		}
 	}
 
-//4.1 ICPの計算実施・保存(ここも２つ)
+//4.1 ICPの計算実施・保存(ここも２つ)（ICPでの位置合わせ結果の評価も）
 	pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
 	pcl::IterativeClosestPoint<PointT, PointT> icp_gyaku;//icpの実体
 	// icp.setInputSource(cloud_org);//original
