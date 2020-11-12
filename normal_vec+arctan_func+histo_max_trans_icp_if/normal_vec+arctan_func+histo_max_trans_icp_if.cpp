@@ -290,22 +290,23 @@ int main(int argc, char** argv)
 	//add icp
 	//
 	typedef pcl::PointXYZRGB PointT;
+
 	pcl::PointCloud<PointT>::Ptr cloud_move (new pcl::PointCloud<PointT>);//move
+
+ 	// cloud_move->width=transformed_cloud->width;
+    // cloud_move->height=transformed_cloud->height;  
+    // cloud_move->is_dense=transformed_cloud->is_dense;
+    // cloud_move->points.resize (transformed_cloud->width * transformed_cloud->height);
+ 	cloud_move->width=transformed_cloud->width;
+    cloud_move->height=transformed_cloud->height;  
+    cloud_move->is_dense=transformed_cloud->is_dense;
+    cloud_move->points.resize (transformed_cloud->width * transformed_cloud->height);
+
 	pcl::PointCloud<PointT>::Ptr cloud_move_gyaku(new pcl::PointCloud<PointT>);//move
-
- 	cloud_move->width=transformed_cloud->width;
-    cloud_move->height=transformed_cloud->height;  
-    cloud_move->is_dense=transformed_cloud->is_dense;
-    cloud_move->points.resize (transformed_cloud->width * transformed_cloud->height);
- 	cloud_move->width=transformed_cloud->width;
-    cloud_move->height=transformed_cloud->height;  
-    cloud_move->is_dense=transformed_cloud->is_dense;
-    cloud_move->points.resize (transformed_cloud->width * transformed_cloud->height);
-
-	cloud_move_gyaku->width=transformed_cloud_gyaku->width;
-    cloud_move_gyaku->height=transformed_cloud_gyaku->height;  
-    cloud_move_gyaku->is_dense=transformed_cloud_gyaku->is_dense;
-    cloud_move_gyaku->points.resize (transformed_cloud_gyaku->width * transformed_cloud_gyaku->height);
+	// cloud_move_gyaku->width=transformed_cloud_gyaku->width;
+    // cloud_move_gyaku->height=transformed_cloud_gyaku->height;  
+    // cloud_move_gyaku->is_dense=transformed_cloud_gyaku->is_dense;
+    // cloud_move_gyaku->points.resize (transformed_cloud_gyaku->width * transformed_cloud_gyaku->height);
  	cloud_move_gyaku->width=transformed_cloud_gyaku->width;
     cloud_move_gyaku->height=transformed_cloud_gyaku->height;  
     cloud_move_gyaku->is_dense=transformed_cloud_gyaku->is_dense;
@@ -347,11 +348,13 @@ int main(int argc, char** argv)
 	pcl::IterativeClosestPoint<PointT, PointT> icp;//icpの実体
 	pcl::IterativeClosestPoint<PointT, PointT> icp_gyaku;//icpの実体
 	// icp.setInputSource(cloud_org);//original
-	icp.setInputSource(l_cloud);//original
-	icp_gyaku.setInputSource(l_cloud);//original
 	// icp.setInputSource(l_cloud);//original
-	icp.setInputTarget(cloud_move);//transformed
-	icp_gyaku.setInputTarget(cloud_move_gyaku);//transformed
+	// icp.setInputTarget(cloud_move);//transformed
+	icp.setInputSource(cloud_move);//original
+	icp.setInputTarget(l_cloud);//transformed
+	icp_gyaku.setInputSource(cloud_move_gyaku);//original
+	// icp.setInputSource(l_cloud);//original
+	icp_gyaku.setInputTarget(l_cloud);//transformed
 
 	// icp.setInputTarget(transformed_cloud);//transformed
 	// Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)

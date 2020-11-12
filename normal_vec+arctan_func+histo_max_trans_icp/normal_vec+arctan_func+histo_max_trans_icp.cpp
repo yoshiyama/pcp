@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 
     #pragma omp parallel
     {
-		cout<<"go"<<endl;
+		// cout<<"go"<<endl;
 		#pragma omp for
 		for(size_t i=0; i < out_cloud->points.size() ; ++i)
 		// for(size_t i=0; i < cloud->points.size() ; ++i)
@@ -270,6 +270,9 @@ int main(int argc, char** argv)
 	std::cout << transform_2.matrix() << std::endl;
 
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
+
+
+
 //3.3 点群の移動
   	pcl::transformPointCloud (*out_cloud, *transformed_cloud, transform_2);
 	//so far, transformeed_cloud is final cloud.
